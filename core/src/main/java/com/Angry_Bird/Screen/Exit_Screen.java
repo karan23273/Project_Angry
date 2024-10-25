@@ -48,7 +48,6 @@ public class Exit_Screen implements Screen {
 
     private void update(float delta) {
         if(yes_Button.clicked()){
-//            dispose();
             exit(0);
         }else if (no_Button.clicked()) {
             game.setScreen(mainMenuScreen);
