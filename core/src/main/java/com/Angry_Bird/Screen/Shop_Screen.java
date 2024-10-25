@@ -43,6 +43,7 @@ public class Shop_Screen implements Screen {
     private Texture buttonB;
     private Texture buttonA;
 
+    private  Texture buyBird;
     public Shop_Screen(final launch game, MainMenuScreen mainMenuScreen) {
         this.game = game;
         this.mainMenuScreen = mainMenuScreen;
@@ -75,7 +76,7 @@ public class Shop_Screen implements Screen {
         this.head = new Texture("heading.png");
         this.buttonA = new Texture("buttonA.png");
         this.buttonB = new Texture("buttonB.png");
-
+        this.buyBird = new Texture("buy bird.png");
 
         this.no_Button = new Click_Button(no_before, no_after, viewport.getWorldWidth() - 150, viewport.getWorldHeight()-150, camera);
         no_Button.setInput(inputMultiplexer);
@@ -109,6 +110,7 @@ public class Shop_Screen implements Screen {
         font.draw(batch, " 2000", 300, 194);
         font.draw(batch, " 10000", 930, 194);
         no_Button.draw(batch);
+        batch.draw(buyBird, 1300, 80, 500, 500);
         batch.end();
         font.setColor(Color.WHITE);
         update(v);
@@ -121,8 +123,8 @@ public class Shop_Screen implements Screen {
         camera.update();
 
         no_Button.set_Position(viewport.getWorldWidth()-150, viewport.getWorldHeight()-150);
-        buy2000.set_Position(180, 110);
-        buy10000.set_Position(780, 110);
+        buy2000.set_Position(200, 150);
+        buy10000.set_Position(800, 150);
     }
 
     @Override
