@@ -3,7 +3,6 @@ package com.Angry_Bird.Screen;
 import com.Angry_Bird.launch;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -53,8 +52,8 @@ public class load_Screen implements Screen {
     }
 
     private void update(float delta) {
-//        progress = MathUtils.lerp(progress, assetManager.getProgress(), 0.04f);
-        progress = assetManager.getProgress();
+        progress = MathUtils.lerp(progress, assetManager.getProgress(), 0.04f);
+//        progress = assetManager.getProgress();
         if (assetManager.update()){
             if (progress >= 0.999f){
                 game.setScreen(new MainMenuScreen(game));
@@ -110,6 +109,8 @@ public class load_Screen implements Screen {
         assetManager.dispose();
         font.dispose();
         texture.dispose();
+        loadbg.dispose();
+        loadfg.dispose();
 
     }
 }
