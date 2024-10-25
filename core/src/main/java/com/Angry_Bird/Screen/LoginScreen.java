@@ -5,12 +5,20 @@ import com.Angry_Bird.launch;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.Viewport;
+
+import java.awt.*;
+
+import static java.awt.SystemColor.text;
 
 public class LoginScreen implements Screen {
     private final launch game;
@@ -39,7 +47,10 @@ public class LoginScreen implements Screen {
     private Texture sign_in_before;
     private Texture sign_in_after;
 
-
+    private Texture bar;
+    private StringBuilder text1;
+    private StringBuilder text2;
+    private Skin skin;
     public LoginScreen(final launch game, MainMenuScreen main_menu_screen) {
         this.game = game;
         this.main_menu_screen = main_menu_screen;
@@ -49,6 +60,9 @@ public class LoginScreen implements Screen {
         this.font = game.getFont();
         this.font2 = game.getFont();
         this.input_multiplexer = new InputMultiplexer();
+        this.text1 = new StringBuilder();
+        this.text2 = new StringBuilder();
+
         Gdx.input.setInputProcessor(input_multiplexer);
     }
     private void update(float delta) {
@@ -67,6 +81,7 @@ public class LoginScreen implements Screen {
 
         this.cross_before = new Texture("4B.png");
         this.cross_after = new Texture("4A.png");
+        this.bar = new Texture("bar.png");
         this.cross_button = new Click_Button(cross_before, cross_after, viewport.getWorldWidth() / 2 + 200, viewport.getWorldHeight() / 2+300, camera);
         cross_button.setInput(input_multiplexer);
 
@@ -98,10 +113,15 @@ public class LoginScreen implements Screen {
         font2.getData().setScale(0.6f);
         font2.draw(batch, "User name",viewport.getWorldWidth() / 2 - 400, viewport.getWorldHeight() / 2 + 100);
         font2.draw(batch, "Password",viewport.getWorldWidth() / 2 - 400, viewport.getWorldHeight() / 2 - 35);
+        batch.draw(bar, viewport.getWorldWidth()/2, viewport.getWorldHeight()/2+40,400, 70);
+        batch.draw(bar, viewport.getWorldWidth()/2, viewport.getWorldHeight()/2-100,400, 70);
+
 
         cross_button.draw(batch);
         login_button.draw(batch);
         sign_in_button.draw(batch);
+
+        //ger
 
         batch.end();
 
@@ -144,6 +164,6 @@ public class LoginScreen implements Screen {
         login_before.dispose();
         sign_in_after.dispose();
         sign_in_before.dispose();
-
+        bar.dispose();
     }
 }

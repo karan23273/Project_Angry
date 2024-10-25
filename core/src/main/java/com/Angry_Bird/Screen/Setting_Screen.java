@@ -81,8 +81,8 @@ public class Setting_Screen implements Screen {
         this.music_button = new Click_Button(music_before, music_after, viewport.getWorldWidth()/2-200, viewport.getWorldHeight()/2-70, camera);
         music_button.setInput(input_multiplexer);
 
-        this.senstivity_before = new Texture("senstivityB.png");
-        this.senstivity_after = new Texture("senstivityA.png");
+        this.senstivity_before = new Texture("saveB.png");
+        this.senstivity_after = new Texture("saveA.png");
         this.senstivity_button = new Click_Button(senstivity_before, senstivity_after, viewport.getWorldWidth()/2 + 50, viewport.getWorldHeight()/2 -30, camera);
         this.senstivity_button.setInput(input_multiplexer);
 

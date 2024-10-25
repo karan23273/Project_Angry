@@ -1,5 +1,6 @@
 package com.Angry_Bird;
 
+import com.Angry_Bird.Screen.Level_Passed;
 import com.Angry_Bird.Screen.MainMenuScreen;
 import com.Angry_Bird.Screen.level1;
 import com.Angry_Bird.Screen.load_Screen;
@@ -71,10 +72,8 @@ public class launch extends Game {
         generator.dispose();
 
         // could not use asset load
-//        this.setScreen(new load_Screen(this));
-        this.setScreen(new level1(this));
+        this.setScreen(new load_Screen(this));
 
-//        this.setScreen(new MainMenuScreen(this));
     }
 
     @Override

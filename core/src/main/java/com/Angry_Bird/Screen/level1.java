@@ -3,6 +3,7 @@ package com.Angry_Bird.Screen;
 import com.Angry_Bird.Birds.Bird_Black;
 import com.Angry_Bird.Birds.Bird_Red;
 import com.Angry_Bird.Birds.Bird_Yellow;
+import com.Angry_Bird.Blocks.Block_Frame;
 import com.Angry_Bird.Blocks.Block_Rectangle;
 import com.Angry_Bird.Buttons.Click_Button;
 import com.Angry_Bird.Pig.Adult_pig;
@@ -15,11 +16,14 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class level1 implements Screen {
+    private final Integer score = 0;
     private final launch game;
     private final float floor = 196;
     private OrthographicCamera camera;
@@ -57,8 +61,14 @@ public class level1 implements Screen {
     private Texture restartA;
 
     private Texture baby_pig;
+    private float Bp1_x = 1455 + 49;
+    private float Bp1_y = floor + 99 + 20 + 200 + 25 + 35;
+
     private Baby_pig baby_pig1;
     private Click_Button destroy_baby1;
+    private float Bp2_x = 1055 + 49;
+    private float Bp2_y = floor + 99 + 20 + 200 + 25 + 35;
+
     private Baby_pig baby_pig2;
     private Click_Button destroy_baby2;
 
@@ -74,15 +84,15 @@ public class level1 implements Screen {
     private Adult_pig adult_pig2;
     private Click_Button destroy_adult2;
 
+    private float Ap3_x = 1455;
+    private float Ap3_y = floor+99+20 + 55 + 25 + 25;
     private Adult_pig adult_pig3;
     private Click_Button destroy_adult3;
 
-    private Adult_pig adult_pig4;
-    private Click_Button destroy_adult4;
 
     private Texture king;
-    private float Kp1_x = 0;
-    private float Kp1_y = 0;
+    private float Kp1_x = 1055;
+    private float Kp1_y = floor + 99 + 20 + 55 + 25 + 25;
     private King_pig kingpin;
     private Click_Button destroy_king;
 
@@ -106,8 +116,11 @@ public class level1 implements Screen {
     private Block_Rectangle blockRectangle17;
     private Block_Rectangle blockRectangle18;
     private Block_Rectangle blockRectangle19;
-    private Block_Rectangle blockRectangle20;
-    private Block_Rectangle blockRectangle21;
+
+    private Block_Frame blockFrame1;
+    private Block_Frame blockFrame2;
+
+//    private Stage stage;
 
     public level1(final launch game) {
         this.game = game;
@@ -120,12 +133,13 @@ public class level1 implements Screen {
     }
 
 
+
     private void update(float delta) {
         int birds = 4, pigs  = 6;
 
         if (pause_Button.clicked()) {
 //            red1.destroy();
-//            game.setScreen(pause_Screen);
+            game.setScreen(new Pause_Screen(game, this));
         }
         if (restart_button.clicked()){
             game.setScreen(new level1(game));
@@ -148,33 +162,39 @@ public class level1 implements Screen {
         }
         if (destroy_adult1.clicked()){
             adult_pig1.destroy();
+//            score += 500;
             pigs--;
         }
         if (destroy_adult2.clicked()){
             adult_pig2.destroy();
+//            score += 500;
             pigs--;
         }
         if (destroy_adult3.clicked()){
             adult_pig3.destroy();
+//            score += 500;
             pigs--;
         }
         if (destroy_baby1.clicked()){
             baby_pig1.destroy();
+//            score += 250;
             pigs--;
         }
         if (destroy_baby2.clicked()){
             baby_pig2.destroy();
+//            score += 250;
             pigs--;
         }
         if (destroy_king.clicked()){
             kingpin.destroy();
+//            score += 2000;
             pigs--;
         }
 
         if(birds == 0 && pigs > 0){
-            game.setScreen(new level1(game));
+            game.setScreen(new Level_Failed(game, this));
         } else if (pigs == 0) {
-
+            game.setScreen(new Level_Passed(game,this));
         }
     }
 
@@ -231,15 +251,17 @@ public class level1 implements Screen {
         this.blockRectangle16 = new Block_Rectangle("wood", 1400+20,floor + 99 + 20,25, 200);
         this.blockRectangle18 = new Block_Rectangle("wood", 1600-20,floor + 99 + 20,25, 200);
 
+        this.blockRectangle11 = new Block_Rectangle("wood", 1055, floor + 99 + 20 + 55,110, 25);
+        this.blockRectangle12 = new Block_Rectangle("wood", 1455,floor + 99 + 20 + 55,110, 25);
+
         this.blockRectangle13 = new Block_Rectangle("rock", 1055,floor + 99 + 20 + 55 + 25,110, 25);
         this.blockRectangle14 = new Block_Rectangle("rock", 1455,floor + 99 + 20 + 55 + 25,110, 25);
 
 
+        this.blockRectangle19 = new Block_Rectangle("rock", 1000, floor + 99 + 20 + 200,620, 25);
 
-        this.blockRectangle11 = new Block_Rectangle("wood", 1055, floor + 99 + 20 + 55,110, 25);
-        this.blockRectangle12 = new Block_Rectangle("wood", 1455,floor + 99 + 20 + 55,110, 25);
-
-
+        this.blockFrame1 = new Block_Frame("Triangle", "rock",1055 ,floor + 99 + 20 + 200 + 25 , 140);
+        this.blockFrame2 = new Block_Frame("Triangle", "rock",1455 ,floor + 99 + 20 + 200 + 25 , 140);
 
 
         destroy_r1 = new Click_Button(Red,Red, 200,floor,camera);
@@ -247,13 +269,13 @@ public class level1 implements Screen {
         destroy_b1 = new Click_Button(Black,Black, 20,floor,camera);
         destroy_y1 = new Click_Button(Yellow,Yellow, 100,floor,camera);
 
-        destroy_baby1 = new Click_Button(baby_pig,baby_pig, 400,floor,camera);
-        destroy_baby2 = new Click_Button(baby_pig,baby_pig, 500,floor,camera);
+        destroy_baby1 = new Click_Button(baby_pig,baby_pig, Bp1_x,Bp1_y,camera);
+        destroy_baby2 = new Click_Button(baby_pig,baby_pig, Bp2_x,Bp2_y,camera);
 
         destroy_adult1 = new Click_Button(adult_pig, adult_pig, Ap1_x, Ap1_y,camera);//--------------
         destroy_adult2 = new Click_Button(adult_pig, adult_pig, Ap2_x, Ap2_y,camera);//
+        destroy_adult3 = new Click_Button(adult_pig, adult_pig, Ap3_x, Ap3_y,camera);
 
-        destroy_adult3 = new Click_Button(adult_pig, adult_pig, 800, floor,camera);
         destroy_king = new Click_Button(king,king, Kp1_x, Kp1_y,camera);
 
         destroy_r1.setInput(inputMultiplexer);
@@ -297,9 +319,12 @@ public class level1 implements Screen {
         font.getData().setScale(0.9f);
 
         font.draw(batch, "Score", viewport.getWorldWidth()-250, viewport.getWorldHeight()-10);
-        Integer score = 1000;
         int s =score.toString().length();
-        font.draw(batch, score.toString(), viewport.getWorldWidth()-200, viewport.getWorldHeight()-100);
+        GlyphLayout glyphLayout = new GlyphLayout();
+        glyphLayout.setText(font, score.toString());
+
+        font.draw(batch, score.toString(), viewport.getWorldWidth()-glyphLayout.width, viewport.getWorldHeight()-glyphLayout.height);
+
         blockRectangle1.draw_obstacle(batch);
         blockRectangle2.draw_obstacle(batch);
         blockRectangle3.draw_obstacle(batch);
@@ -318,7 +343,10 @@ public class level1 implements Screen {
         blockRectangle16.draw_obstacle(batch);
         blockRectangle17.draw_obstacle(batch);
         blockRectangle18.draw_obstacle(batch);
+        blockRectangle19.draw_obstacle(batch);
 
+        blockFrame1.draw_frame(batch);
+        blockFrame2.draw_frame(batch);
         batch.end();
         update(v);
     }
@@ -344,16 +372,18 @@ public class level1 implements Screen {
         destroy_y1.set_Position(100,floor);
 
         // PIGS
-        baby_pig1.setPig(400,floor);
-        destroy_baby1.set_Position(400,floor);
-        baby_pig2.setPig(500,floor);
-        destroy_baby2.set_Position(500,floor);
+        baby_pig1.setPig(Bp1_x, Bp1_y);
+        destroy_baby1.set_Position(Bp1_x, Bp1_y);
+
+        baby_pig2.setPig(Bp2_x,Bp2_y);
+        destroy_baby2.set_Position(Bp2_x,Bp2_y);
+
         adult_pig1.setPig(Ap1_x,Ap1_y);//------------------
         destroy_adult1.set_Position(Ap1_x,Ap1_y);//------------
         adult_pig2.setPig(Ap2_x, Ap2_y);//---------------
         destroy_adult2.set_Position(Ap2_x, Ap2_y);//--------------
-        adult_pig3.setPig(800,floor);
-        destroy_adult3.set_Position(800,floor);
+        adult_pig3.setPig(Ap3_x,Ap3_y);
+        destroy_adult3.set_Position(Ap3_x,Ap3_y);
         kingpin.setPig(Kp1_x,Kp1_y);
         destroy_king.set_Position(Kp1_x,Kp1_y);
 
