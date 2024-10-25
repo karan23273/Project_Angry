@@ -8,6 +8,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -97,11 +98,14 @@ public class MainMenuScreen implements Screen {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         batch.draw(launch_image,0, 0,  viewport.getWorldWidth(), viewport.getWorldHeight());
-        batch.draw(fame, 10, viewport.getWorldHeight() - 90, 260 ,80);
-        batch.draw(coin, 20, viewport.getWorldHeight() - 75, 55 ,55);
 
         // this coin will be teken from date
         Integer c = game.getCoin();
+        GlyphLayout glyphLayout = new GlyphLayout();
+        glyphLayout.setText(font, c.toString());
+
+        batch.draw(fame, 10, viewport.getWorldHeight() - 90, glyphLayout.width + 150 ,80);
+        batch.draw(coin, 20, viewport.getWorldHeight() - 75, 55 ,55);
         font.getData().setScale(0.5f);
         font.draw(batch, c.toString(), 100 , viewport.getWorldHeight() - 25);
         play_button.draw(batch);
@@ -149,6 +153,7 @@ public class MainMenuScreen implements Screen {
         exit_after.dispose();
         shop_before.dispose();
         shop_after.dispose();
+        fame.dispose();
         coin.dispose();
 
     }
