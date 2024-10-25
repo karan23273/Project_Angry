@@ -84,9 +84,9 @@ public class launch extends Game {
     @Override
     public void dispose() {
         batch.dispose();
-        super.dispose();
-
+        font.dispose();
         getScreen().dispose();
+        super.dispose();
 //        assetManager.dispose();
 
     }

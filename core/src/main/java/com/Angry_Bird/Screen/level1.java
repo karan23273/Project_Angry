@@ -424,8 +424,10 @@ public class level1 implements Screen {
         baby_pig.dispose();
         baby_pig2.dispose();
         baby_pig1.dispose();
-
-
+        king.dispose();
+        birdRed1.dispose();
+        birdRed2.dispose();
+        adult_pig1.dispose();
 
     }
 }
