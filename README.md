@@ -1,4 +1,4 @@
-# Angry BIrd 
+# Angry Bird 
 					ANGRY BIRD
 How to Run:
 Step 1: Download the Project from GitHub
