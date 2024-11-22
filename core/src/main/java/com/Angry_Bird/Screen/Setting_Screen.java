@@ -5,6 +5,7 @@ import com.Angry_Bird.launch;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -18,6 +19,7 @@ public class Setting_Screen implements Screen {
     private OrthographicCamera camera;
     private Viewport viewport;
     private SpriteBatch batch;
+    private AssetManager assetManager;
     private Texture launch_image;
     private BitmapFont font;
     private Click_Button cross_button;
@@ -36,15 +38,16 @@ public class Setting_Screen implements Screen {
     private Texture erase_before;
     private Texture erase_after;
 
-    private Click_Button senstivity_button;
-    private Texture senstivity_before;
-    private Texture senstivity_after;
+    private Click_Button logout_button;
+    private Texture logout_before;
+    private Texture logout_after;
 
     public Setting_Screen(final launch game, MainMenuScreen mainMenuScreen) {
         this.game = game;
         this.mainMenuScreen = mainMenuScreen;
         this.camera = game.getCamera();
         this.viewport = game.getViewport();
+        this.assetManager = game.getAssetManager();
         this.batch = game.getBatch();
         this.font = game.getFont();
         this.input_multiplexer = new InputMultiplexer();
@@ -54,40 +57,69 @@ public class Setting_Screen implements Screen {
 
     private void update(float delta) {
         if (cross_button.clicked()){
-            game.setScreen(mainMenuScreen);
-        }else if (Sound_button.clicked()){
-            //
-        } else if (music_button.clicked()) {
-            //
+            game.setScreen(game.getMainMenuScreen());
         }
+
+        if (Sound_button.isOn()){
+            game.resumeSound();
+        }else if(!Sound_button.isOn()){
+            game.pauseSound();
+        }
+
+        if (music_button.isOn()){
+            game.playMusic();
+        } else if (!music_button.isOn()) {
+            game.pauseMusic();
+        }
+        if (erase_button.clicked()){
+            game.eraseData(game.getLoginScreen().getUserid());
+            game.getLoginScreen().updateStatus();
+            game.setScreen(game.getMainMenuScreen());
+        }
+        if (logout_button.clicked()){
+            game.getLoginScreen().updateStatus();
+            game.setScreen(game.getMainMenuScreen());
+        }
+
     }
 
     @Override
     public void show() {
-        this.launch_image = new Texture("template.png");
+        this.launch_image = assetManager.get("template.png", Texture.class);
 
-        this.cross_before = new Texture("4B.png");
-        this.cross_after = new Texture("4A.png");
+        this.cross_before = assetManager.get("4B.png", Texture.class);
+        this.cross_after = assetManager.get("4A.png", Texture.class);
         this.cross_button = new Click_Button(cross_before, cross_after, viewport.getWorldWidth() / 2 + 200, viewport.getWorldHeight() / 2+300, camera);
         cross_button.setInput(input_multiplexer);
 
-        this.Sound_before = new Texture("5B.png");
-        this.Sound_after = new Texture("5A.png");
+        this.Sound_before = assetManager.get("5B.png", Texture.class);
+        this.Sound_after = assetManager.get("5A.png", Texture.class);
         this.Sound_button = new Click_Button(Sound_before, Sound_after, viewport.getWorldWidth()/2-400, viewport.getWorldHeight()/2-70, camera);
         Sound_button.setInput(input_multiplexer);
 
-        this.music_before = new Texture("6B.png");
-        this.music_after = new Texture("6A.png");
+        if (game.is_sound_ON()){
+            Sound_button.setOn();
+        }else {
+            Sound_button.setOff();
+        }
+
+        this.music_before = assetManager.get("6B.png", Texture.class);
+        this.music_after = assetManager.get("6A.png", Texture.class);
         this.music_button = new Click_Button(music_before, music_after, viewport.getWorldWidth()/2-200, viewport.getWorldHeight()/2-70, camera);
         music_button.setInput(input_multiplexer);
+        if (game.getMusic().isPlaying()){
+            music_button.setOn();
+        }else {
+            music_button.setOff();
+        }
 
-        this.senstivity_before = new Texture("saveB.png");
-        this.senstivity_after = new Texture("saveA.png");
-        this.senstivity_button = new Click_Button(senstivity_before, senstivity_after, viewport.getWorldWidth()/2 + 50, viewport.getWorldHeight()/2 -30, camera);
-        this.senstivity_button.setInput(input_multiplexer);
+        this.logout_before = assetManager.get("saveB.png", Texture.class);
+        this.logout_after = assetManager.get("saveA.png", Texture.class);
+        this.logout_button = new Click_Button(logout_before, logout_after, viewport.getWorldWidth()/2 + 50, viewport.getWorldHeight()/2 -30, camera);
+        this.logout_button.setInput(input_multiplexer);
 
-        this.erase_before = new Texture("eraseB.png");
-        this.erase_after = new Texture("eraseA.png");
+        this.erase_before = assetManager.get("eraseB.png", Texture.class);
+        this.erase_after = assetManager.get("eraseA.png", Texture.class);
         this.erase_button = new Click_Button(erase_before, erase_after, viewport.getWorldWidth()/2 + 50, viewport.getWorldHeight()/2-200, camera);
         this.erase_button.setInput(input_multiplexer);
 
@@ -105,9 +137,13 @@ public class Setting_Screen implements Screen {
         font.getData().setScale(0.9f);
         font.draw(batch, "Settings", viewport.getWorldWidth() / 2-180, viewport.getWorldHeight() / 2+200);
         cross_button.draw(batch);
-        Sound_button.toggleDraw(batch);
-        music_button.toggleDraw(batch);
-        senstivity_button.draw(batch);
+        if (Sound_button.isOn()) Sound_button.toggleDrawON(batch);
+        else Sound_button.toggleDrawOFF(batch);
+
+        if (music_button.isOn()) music_button.toggleDrawON(batch);
+        else music_button.toggleDrawOFF(batch);
+
+        logout_button.draw(batch);
         erase_button.draw(batch);
         batch.end();
         update(v);
@@ -121,7 +157,7 @@ public class Setting_Screen implements Screen {
         cross_button.set_Position(viewport.getWorldWidth() / 2 + 450, viewport.getWorldHeight() / 2 + 200);
         Sound_button.set_Position(viewport.getWorldWidth() / 2 - 400, viewport.getWorldHeight() / 2 -70);
         music_button.set_Position(viewport.getWorldWidth() / 2 - 200, viewport.getWorldHeight() / 2 -70);
-        senstivity_button.set_Position(viewport.getWorldWidth() / 2 + 50, viewport.getWorldHeight() / 2 - 30);
+        logout_button.set_Position(viewport.getWorldWidth() / 2 + 50, viewport.getWorldHeight() / 2 - 30);
         erase_button.set_Position(viewport.getWorldWidth() / 2 + 50, viewport.getWorldHeight() / 2 - 200);
     }
 
@@ -149,8 +185,8 @@ public class Setting_Screen implements Screen {
         Sound_before.dispose();
         music_after.dispose();
         music_before.dispose();
-        senstivity_after.dispose();
-        senstivity_before.dispose();
+        logout_after.dispose();
+        logout_before.dispose();
         erase_after.dispose();
         erase_before.dispose();
 

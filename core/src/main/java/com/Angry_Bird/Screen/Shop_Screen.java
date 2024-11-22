@@ -5,6 +5,7 @@ import com.Angry_Bird.launch;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -19,6 +20,7 @@ public class Shop_Screen implements Screen {
     private final launch game;
     private OrthographicCamera camera;
     private Viewport viewport;
+    private AssetManager assetManager;
 
     private SpriteBatch batch;
     private Texture launch_image;
@@ -49,6 +51,7 @@ public class Shop_Screen implements Screen {
         this.mainMenuScreen = mainMenuScreen;
         this.camera = game.getCamera();
         this.viewport = game.getViewport();
+        this.assetManager = game.getAssetManager();
         this.batch = game.getBatch();
         this.font = game.getFont();
         this.inputMultiplexer = new InputMultiplexer();
@@ -59,24 +62,26 @@ public class Shop_Screen implements Screen {
         if (no_Button.clicked()) {
             game.setScreen(mainMenuScreen);
         }
-        if (buy2000.clicked()){
+        if (buy2000.isOn()){
             game.buy_coin(2000);
+            buy2000.setOff();
         }
-        if(buy10000.clicked()){
+        if(buy10000.isOn()){
             game.buy_coin(10000);
+            buy10000.setOff();
         }
     }
 
     @Override
     public void show() {
-        this.launch_image = new Texture("210869.jpg");
-        this.no_before = new Texture("4B.png");
-        this.no_after = new Texture("4A.png");
-        this.coins_shop = new Texture("coins shop.png");
-        this.head = new Texture("heading.png");
-        this.buttonA = new Texture("buttonA.png");
-        this.buttonB = new Texture("buttonB.png");
-        this.buyBird = new Texture("buy bird.png");
+        this.launch_image = assetManager.get("210869.jpg", Texture.class);
+        this.no_before = assetManager.get("4B.png", Texture.class);
+        this.no_after = assetManager.get("4A.png", Texture.class);
+        this.coins_shop = assetManager.get("coins shop.png", Texture.class);
+        this.head = assetManager.get("heading.png", Texture.class);
+        this.buttonA = assetManager.get("buttonA.png", Texture.class);
+        this.buttonB = assetManager.get("buttonB.png", Texture.class);
+        this.buyBird = assetManager.get("buy bird.png", Texture.class);
 
         this.no_Button = new Click_Button(no_before, no_after, viewport.getWorldWidth() - 150, viewport.getWorldHeight()-150, camera);
         no_Button.setInput(inputMultiplexer);

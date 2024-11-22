@@ -5,6 +5,7 @@ import com.Angry_Bird.launch;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -18,6 +19,7 @@ public class Exit_Screen implements Screen {
     private final launch game;
     private OrthographicCamera camera;
     private Viewport viewport;
+    private AssetManager assetManager;
 
     private SpriteBatch batch;
     private Texture launch_image;
@@ -42,6 +44,7 @@ public class Exit_Screen implements Screen {
         this.viewport = game.getViewport();
         this.batch = game.getBatch();
         this.font = game.getFont();
+        this.assetManager = game.getAssetManager();
         this.inputMultiplexer = new InputMultiplexer();
         Gdx.input.setInputProcessor(inputMultiplexer);
     }
@@ -50,17 +53,17 @@ public class Exit_Screen implements Screen {
         if(yes_Button.clicked()){
             exit(0);
         }else if (no_Button.clicked()) {
-            game.setScreen(mainMenuScreen);
+            game.setScreen(game.getMainMenuScreen());
         }
     }
 
     @Override
     public void show() {
-        this.launch_image = new Texture("template.png");
-        this.yes_before = new Texture("3B.png");
-        this.no_before = new Texture("4B.png");
-        this.yes_after = new Texture("3A.png");
-        this.no_after = new Texture("4A.png");
+        this.launch_image = assetManager.get("template.png", Texture.class);
+        this.yes_before = assetManager.get("3B.png", Texture.class);
+        this.no_before = assetManager.get("4B.png", Texture.class);
+        this.yes_after = assetManager.get("3A.png", Texture.class);
+        this.no_after = assetManager.get("4A.png", Texture.class);
 
         this.yes_Button = new Click_Button(yes_before, yes_after, viewport.getWorldWidth()/4, viewport.getWorldHeight()/3, camera);
         yes_Button.setInput(inputMultiplexer);

@@ -5,6 +5,7 @@ import com.Angry_Bird.launch;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -19,7 +20,7 @@ public class Level_Screen implements Screen {
     private final launch game;
     private OrthographicCamera camera;
     private Viewport viewport;
-
+    private AssetManager assetManager;
     private SpriteBatch batch;
     private Texture launch_image;
     private BitmapFont font;
@@ -42,12 +43,18 @@ public class Level_Screen implements Screen {
     private Click_Button level2_button;
     private Click_Button level3_button;
 
+    private Texture star_1;
+    private Texture star_2;
+    private Texture star_3;
+
+
     public Level_Screen(final launch game, MainMenuScreen mainMenuScreen) {
         this.game = game;
         this.mainMenuScreen = mainMenuScreen;
         this.camera = game.getCamera();
         this.viewport = game.getViewport();
         this.batch = game.getBatch();
+        this.assetManager = game.getAssetManager();
         this.font = game.getFont();
         this.inputMultiplexer = new InputMultiplexer();
         Gdx.input.setInputProcessor(inputMultiplexer);
@@ -55,10 +62,10 @@ public class Level_Screen implements Screen {
 
     private void update(float delta) {
         if (no_Button.clicked()) {
-            game.setScreen(mainMenuScreen);
+            game.setScreen(game.getMainMenuScreen());
         }
         if (level1_button.clicked()) {
-            game.setScreen(new level1(game));
+            game.setScreen(game.getLevel_1());
         }
 //        if (level2_button.clicked()) {
 //            game.setScreen(new level2(game));
@@ -70,13 +77,17 @@ public class Level_Screen implements Screen {
 
     @Override
     public void show() {
-        this.launch_image = new Texture("level.png");
-        this.no_before = new Texture("back.png");
-        this.no_after = new Texture("backA.png");
-        this.level_F = new Texture("levelFrame.png");
-        this.lock = new Texture("lock.png");
-        this.levelB = new Texture("levelFrameB.png");
-        this.levelA = new Texture("levelFrameA.png");
+        this.launch_image = assetManager.get("level.png", Texture.class);
+        this.no_before = assetManager.get("back.png", Texture.class);
+        this.no_after = assetManager.get("backA.png", Texture.class);
+        this.level_F = assetManager.get("levelFrame.png", Texture.class);
+        this.lock = assetManager.get("lock.png", Texture.class);
+        this.levelB = assetManager.get("levelFrameB.png", Texture.class);
+        this.levelA = assetManager.get("levelFrameA.png", Texture.class);
+        this.star_1 =assetManager.get("star.png", Texture.class);
+        this.star_2 =assetManager.get("star.png", Texture.class);
+        this.star_3 =assetManager.get("star.png", Texture.class);
+
 
         this.no_Button = new Click_Button(no_before, no_after, no_before.getWidth()+50, viewport.getWorldHeight() - 50 - no_before.getHeight(), camera);
         no_Button.setInput(inputMultiplexer);
@@ -106,15 +117,22 @@ public class Level_Screen implements Screen {
 
         font.getData().setScale(1.4f);
         font.setColor(Color.WHITE);
-//        batch.draw(level_F, 300,3*viewport.getWorldHeight() /4 -30 , 200, 200);
         level1_button.draw(batch);
         font.draw(batch, "1", 370, viewport.getWorldHeight() -115);
-//        batch.draw(level_F, 600,3*viewport.getWorldHeight() /4 -30 , 200, 200);
+        batch.draw(star_1, 300, viewport.getWorldHeight() -320, 70 ,58);
+        batch.draw(star_2, 365, viewport.getWorldHeight() -320, 70 ,58);
+        batch.draw(star_3, 430, viewport.getWorldHeight() -320, 70 ,58);
         level2_button.draw(batch);
         font.draw(batch, "2", 670, viewport.getWorldHeight() -115);
-//        batch.draw(level_F, 900,3*viewport.getWorldHeight() /4 -30 , 200, 200);
+        batch.draw(star_1, 300, viewport.getWorldHeight() -320, 70 ,58);
+        batch.draw(star_2, 365, viewport.getWorldHeight() -320, 70 ,58);
+        batch.draw(star_3, 430, viewport.getWorldHeight() -320, 70 ,58);
+
         level3_button.draw(batch);
         font.draw(batch, "3", 970, viewport.getWorldHeight() -115);
+        batch.draw(star_1, 300, viewport.getWorldHeight() -320, 70 ,58);
+        batch.draw(star_2, 365, viewport.getWorldHeight() -320, 70 ,58);
+        batch.draw(star_3, 430, viewport.getWorldHeight() -320, 70 ,58);
 
         batch.draw(level_F, 1200,3*viewport.getWorldHeight()/4 -30 , 200, 200);
         batch.draw(lock, 1245, 3*viewport.getWorldHeight() /4 , 101, 130 );
@@ -143,8 +161,6 @@ public class Level_Screen implements Screen {
         batch.draw(lock, 1245, 3*viewport.getWorldHeight() /4 - 600, 101, 130 );
         batch.draw(level_F, 1500,3*viewport.getWorldHeight()/4 -630, 200, 200);
         batch.draw(lock, 1545, 3*viewport.getWorldHeight() /4 - 600, 101, 130 );
-//        font.draw(batch, "ARE YOU SURE YOU ", viewport.getWorldWidth()/2 -400, viewport.getWorldHeight()/2+200);
-//        font.draw(batch, "WANT TO QUIT?", viewport.getWorldWidth()/2 -310, viewport.getWorldHeight()/2+80);
         no_Button.draw(batch);
         font.setColor(Color.WHITE);
         batch.end();
@@ -185,5 +201,8 @@ public class Level_Screen implements Screen {
         no_after.dispose();
         level_F.dispose();
         lock.dispose();
+        star_1.dispose();
+        star_2.dispose();
+        star_3.dispose();
     }
 }

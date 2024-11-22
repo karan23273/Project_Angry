@@ -5,6 +5,7 @@ import com.Angry_Bird.Birds.Bird_Red;
 import com.Angry_Bird.Birds.Bird_Yellow;
 import com.Angry_Bird.Blocks.Block_Frame;
 import com.Angry_Bird.Blocks.Block_Rectangle;
+import com.Angry_Bird.Buttons.Catapult;
 import com.Angry_Bird.Buttons.Click_Button;
 import com.Angry_Bird.Pig.Adult_pig;
 import com.Angry_Bird.Pig.Baby_pig;
@@ -13,26 +14,33 @@ import com.Angry_Bird.launch;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import java.util.ArrayList;
+import java.util.Queue;
+
 public class level1 implements Screen {
-    private final Integer score = 0;
+    private Integer score = 0;
     private final launch game;
-    private final float floor = 196;
+    private final float floorWidth = 196;
     private OrthographicCamera camera;
     private Viewport viewport;
+    private AssetManager assetManager;
 
     private SpriteBatch batch;
     private Texture level_image;
 
-    private Texture catapult;
+    private Texture cata;
     private BitmapFont font;
 
     private Click_Button pause_Button;
@@ -44,13 +52,8 @@ public class level1 implements Screen {
     private Bird_Black birdBlack1;
     private Bird_Yellow birdYellow1;
 
-    private Click_Button destroy_r1;
-    private Click_Button destroy_r2;
-    private Click_Button destroy_b1;
-    private Click_Button destroy_y1;
 
     // Using in buttons only
-    private Texture Red;
     private Texture Black;
     private Texture Yellow;
 
@@ -62,40 +65,33 @@ public class level1 implements Screen {
 
     private Texture baby_pig;
     private float Bp1_x = 1455 + 49;
-    private float Bp1_y = floor + 99 + 20 + 200 + 25 + 35;
+    private float Bp1_y = floorWidth + 99 + 20 + 200 + 25 + 35;
 
     private Baby_pig baby_pig1;
-    private Click_Button destroy_baby1;
     private float Bp2_x = 1055 + 49;
-    private float Bp2_y = floor + 99 + 20 + 200 + 25 + 35;
+    private float Bp2_y = floorWidth + 99 + 20 + 200 + 25 + 35;
 
     private Baby_pig baby_pig2;
-    private Click_Button destroy_baby2;
 
     private Texture adult_pig;
 
-    private float Ap1_x = 1050+30;
-    private float Ap1_y = floor+99+20;
+    private float Ap1_x = 1050+30 + 20;
+    private float Ap1_y = floorWidth +99+20 + 20;
     private Adult_pig adult_pig1;
-    private Click_Button destroy_adult1;
 
-    private float Ap2_x = 1450+30;
-    private float Ap2_y = floor+99+20;
+    private float Ap2_x = 1450+30 + 20;
+    private float Ap2_y = floorWidth +99+20 + 20;
     private Adult_pig adult_pig2;
-    private Click_Button destroy_adult2;
 
-    private float Ap3_x = 1455;
-    private float Ap3_y = floor+99+20 + 55 + 25 + 25;
+    private float Ap3_x = 1455 +40;
+    private float Ap3_y = floorWidth +99+20 + 55 + 25 + 25 + 80;
     private Adult_pig adult_pig3;
-    private Click_Button destroy_adult3;
 
 
     private Texture king;
-    private float Kp1_x = 1055;
-    private float Kp1_y = floor + 99 + 20 + 55 + 25 + 25;
+    private float Kp1_x = 1055 + 40;
+    private float Kp1_y =  floorWidth +99+20 + 55 + 25 + 25 + 80;
     private King_pig kingpin;
-    private Click_Button destroy_king;
-
 
     private Block_Rectangle blockRectangle1;
     private Block_Rectangle blockRectangle2;
@@ -120,294 +116,374 @@ public class level1 implements Screen {
     private Block_Frame blockFrame1;
     private Block_Frame blockFrame2;
 
-//    private Stage stage;
+    private Body floor;
+    private BodyDef floor_body;
+    private FixtureDef floor_fixture;
+
+    private World world;
+    private Box2DDebugRenderer box2DDebugRenderer;
+
+    private Body catapult;
+    private BodyDef catapult_body;
+    private FixtureDef catapult_fixture;
+
+    private Catapult catapult_drag;
+    private float PPM;
+
+    private ArrayList<Body> birds;
+    private ArrayList<Body> destroyBody;
+    private int kills;
+    private float wait = 0;
+    private boolean isPaused = false;
 
     public level1(final launch game) {
+        this.PPM = game.getPPM();
         this.game = game;
         this.camera = game.getCamera();
         this.viewport = game.getViewport();
         this.batch = game.getBatch();
         this.font = game.getFont();
+        this.world = game.getWorld();
+        this.assetManager = game.getAssetManager();
         this.inputMultiplexer = new InputMultiplexer();
+
+        this.box2DDebugRenderer = new Box2DDebugRenderer();
+        // floor
+        this.floor_body = new BodyDef();
+        this.floor_fixture = new FixtureDef();
+        kills =4;
+        // catapult
+        this.catapult_body = new BodyDef();
+        this.catapult_fixture = new FixtureDef();
+        this.birds = new ArrayList<>();
+        this.destroyBody = game.getDestorybody();
         Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
 
 
     private void update(float delta) {
-        int birds = 4, pigs  = 6;
 
         if (pause_Button.clicked()) {
 //            red1.destroy();
-            game.setScreen(new Pause_Screen(game, this));
+            wait += delta;
+            if (wait >0.5f){
+                isPaused = true;
+                pause();
+                game.setScreen(new Pause_Screen(game, this));
+                wait = 0;
+            }
         }
         if (restart_button.clicked()){
-            game.setScreen(new level1(game));
-        }
-        if (destroy_r1.clicked()) {
-            birdRed1.destroy();
-            birds--;
-        }
-        if (destroy_r2.clicked()) {
-            birdRed2.destroy();
-            birds--;
-        }
-        if (destroy_b1.clicked()) {
-            birdBlack1.destroy();
-            birds--;
-        }
-        if (destroy_y1.clicked()) {
-            birdYellow1.destroy();
-            birds--;
-        }
-        if (destroy_adult1.clicked()){
-            adult_pig1.destroy();
-//            score += 500;
-            pigs--;
-        }
-        if (destroy_adult2.clicked()){
-            adult_pig2.destroy();
-//            score += 500;
-            pigs--;
-        }
-        if (destroy_adult3.clicked()){
-            adult_pig3.destroy();
-//            score += 500;
-            pigs--;
-        }
-        if (destroy_baby1.clicked()){
-            baby_pig1.destroy();
-//            score += 250;
-            pigs--;
-        }
-        if (destroy_baby2.clicked()){
-            baby_pig2.destroy();
-//            score += 250;
-            pigs--;
-        }
-        if (destroy_king.clicked()){
-            kingpin.destroy();
-//            score += 2000;
-            pigs--;
+            game.setWorld(new World(new Vector2(0, -9.8f),true));
+            game.setLevel_1(new level1(game));
+            game.setScreen(game.getLevel_1());
         }
 
-        if(birds == 0 && pigs > 0){
-            game.setScreen(new Level_Failed(game, this));
-        } else if (pigs == 0) {
-            game.setScreen(new Level_Passed(game,this));
+
+        if (kills<=0) {
+            wait+=delta;
+            if (wait>1){
+                game.setScreen(game.getLevelPassed());
+                wait = 0;
+            }
+
         }
+//        else if(kills>0 && birds>0){
+//            game.setScreen(new Level_Failed(game, this));
+//        }
+    }
+
+    public Integer getScore(){
+        return score;
+    }
+    public void setScore(Integer score){
+        this.score = score;
     }
 
     @Override
     public void show() {
-        this.level_image = new Texture("A2.png");
-        this.catapult = new Texture("catapult.png");
-        this.pause_before = new Texture("pauseB.png");
-        this.pause_after = new Texture("pauseA.png");
-        this.Red = new Texture("red40.png");
-        this.Black = new Texture("black.png");
-        this.Yellow = new Texture("yellowA.png");
-        this.restartB = new Texture("restartB.png");
-        this.restartA = new Texture("restartA.png");
-        this.adult_pig = new Texture("AdultpigA.png");
-        this.baby_pig = new Texture("BabyPigA.png");
-        this.king = new Texture("kingPinA.png");
+        this.level_image = assetManager.get("A2.png", Texture.class);
+        this.cata = assetManager.get("catapult.png", Texture.class);
+        this.pause_before = assetManager.get("pauseB.png", Texture.class);
+        this.pause_after = assetManager.get("pauseA.png", Texture.class);
+//        this.Red = assetManager.get("red40.png", Texture.class);
+        this.Black = assetManager.get("black.png", Texture.class);
+        this.Yellow = assetManager.get("yellowA.png", Texture.class);
+        this.restartB = assetManager.get("restartB.png", Texture.class);
+        this.restartA = assetManager.get("restartA.png", Texture.class);
+        this.adult_pig = assetManager.get("AdultpigA.png", Texture.class);
+        this.baby_pig = assetManager.get("BabyPigA.png", Texture.class);
+        this.king = assetManager.get("kingPinA.png", Texture.class);
 
-
-        this.pause_Button = new Click_Button(pause_before, pause_after, 15, viewport.getWorldHeight()-165, camera);
+        this.pause_Button = new Click_Button(pause_before, pause_after, 15/PPM, (viewport.getWorldHeight()-170)/PPM, camera, 180/PPM, 180/PPM);
         pause_Button.setInput(inputMultiplexer);
 
-        this.restart_button = new Click_Button(restartB, restartA, 200, viewport.getWorldHeight()-165, camera);
+        this.restart_button = new Click_Button(restartB, restartA, 200/PPM, (viewport.getWorldHeight()-170)/PPM, camera, 180/PPM, 180/PPM);
         restart_button.setInput(inputMultiplexer);
 
-        this.birdRed1 = new Bird_Red(game);
-        this.birdRed2 = new Bird_Red(game);
-        this.birdBlack1 = new Bird_Black(game);
-        this.birdYellow1 = new Bird_Yellow(game);
+//        birds.add(new Bird_Red(game, 300/PPM, (floorWidth+190)/PPM).getBody());
+        this.birdRed1 = new Bird_Red(game, 300/PPM, (floorWidth+25)/PPM);
+        birds.add(birdRed1.getBody());
+        this.birdRed2 = new Bird_Red(game, 260/PPM, (floorWidth+25)/PPM);
+        birds.add(birdRed2.getBody());
+        this.birdYellow1 = new Bird_Yellow(game, 200/PPM, (floorWidth+25)/PPM);
+        birds.add(birdYellow1.getBody());
+        this.birdBlack1 = new Bird_Black(game, 120/PPM, (floorWidth+25)/PPM);
+        birds.add(birdBlack1.getBody());
         // pig
-        this.baby_pig1 = new Baby_pig(game);
-        this.baby_pig2 = new Baby_pig(game);
-        this.kingpin = new King_pig(game);
-        this.adult_pig1 = new Adult_pig(game);
-        this.adult_pig2 = new Adult_pig(game);
-        this.adult_pig3 = new Adult_pig(game);
-        this.blockRectangle1 = new Block_Rectangle("wood", 1200 ,floor ,20, 100);
-        this.blockRectangle2 = new Block_Rectangle("wood", 1000,floor,20, 100);
+//        this.baby_pig1 = new Baby_pig(game, Bp1_x, Bp1_y);
+//        this.baby_pig2 = new Baby_pig(game, Bp2_x, Bp2_y);
+        this.kingpin = new King_pig(game, Kp1_x, Kp1_y);
+        this.adult_pig1 = new Adult_pig(game, Ap1_x, Ap1_y);
+        this.adult_pig2 = new Adult_pig(game, Ap2_x, Ap2_y);
+        this.adult_pig3 = new Adult_pig(game, Ap3_x, Ap3_y);
+        this.blockRectangle1 = new Block_Rectangle(game,"wood", 1200 , floorWidth,30, 100);
+        this.blockRectangle2 = new Block_Rectangle(game,"wood", 1000, floorWidth,30, 100);
 
 
-        this.blockRectangle4 = new Block_Rectangle("wood", 1600,floor,20, 100);
-        this.blockRectangle5 = new Block_Rectangle("wood", 1400,floor,20, 100);
+        this.blockRectangle4 = new Block_Rectangle(game,"wood", 1600, floorWidth,30, 100);
+        this.blockRectangle5 = new Block_Rectangle(game,"wood", 1400, floorWidth,30, 100);
 
-        this.blockRectangle3 = new Block_Rectangle("rock", 1000,floor + 99,220, 20);
-        this.blockRectangle6 = new Block_Rectangle("rock", 1400,floor + 99,220, 20f);
+        this.blockRectangle3 = new Block_Rectangle(game,"rock", 1000 + 100, floorWidth + 105,230, 20);
+        this.blockRectangle6 = new Block_Rectangle(game,"rock", 1400 + 100, floorWidth + 105,230, 20);
 
-        this.blockRectangle8 = new Block_Rectangle("wood", 1055,floor + 99 + 20,25, 55);
-        this.blockRectangle9 = new Block_Rectangle("wood", 1140,floor + 99 + 20,25, 55);
-        this.blockRectangle7 = new Block_Rectangle("wood", 1455,floor + 99 + 20,25, 55);
-        this.blockRectangle10 = new Block_Rectangle("wood", 1540,floor + 99 + 20,25, 55);
+        this.blockRectangle8 = new Block_Rectangle(game,"wood", 1045, floorWidth + 150 + 20,25, 100);
+        this.blockRectangle9 = new Block_Rectangle(game,"wood", 1160, floorWidth + 150 + 20,25, 100);
+        this.blockRectangle7 = new Block_Rectangle(game,"wood", 1430, floorWidth + 150 + 20,25, 100);
+        this.blockRectangle10 = new Block_Rectangle(game,"wood", 1580, floorWidth + 150 +20,25, 100);
 
-        this.blockRectangle15 = new Block_Rectangle("wood", 1000+20,floor + 99 + 20,25, 200);
-        this.blockRectangle17 = new Block_Rectangle("wood", 1200-20,floor + 99 + 20,25, 200);
-        this.blockRectangle16 = new Block_Rectangle("wood", 1400+20,floor + 99 + 20,25, 200);
-        this.blockRectangle18 = new Block_Rectangle("wood", 1600-20,floor + 99 + 20,25, 200);
+        this.blockRectangle15 = new Block_Rectangle(game,"wood", 1000+20, floorWidth + 150 + 50 + 50,25, 300);
+        this.blockRectangle17 = new Block_Rectangle(game,"wood", 1200-20, floorWidth + 150 + 50 + 50,25, 300);
+        this.blockRectangle16 = new Block_Rectangle(game,"wood", 1400+20, floorWidth + 150 + 50 + 50,25, 300);
+        this.blockRectangle18 = new Block_Rectangle(game,"wood", 1600-20, floorWidth + 150 + 50 + 50,25, 300);
 
-        this.blockRectangle11 = new Block_Rectangle("wood", 1055, floor + 99 + 20 + 55,110, 25);
-        this.blockRectangle12 = new Block_Rectangle("wood", 1455,floor + 99 + 20 + 55,110, 25);
+        this.blockRectangle11 = new Block_Rectangle(game,"wood", 1045 + (1160-1045)/2, floorWidth + 150 + 20 + 55,140, 25);
+        this.blockRectangle12 = new Block_Rectangle(game,"wood", 1440 + (1160-1045)/2, floorWidth + 150 + 20 + 55,140, 25);
 
-        this.blockRectangle13 = new Block_Rectangle("rock", 1055,floor + 99 + 20 + 55 + 25,110, 25);
-        this.blockRectangle14 = new Block_Rectangle("rock", 1455,floor + 99 + 20 + 55 + 25,110, 25);
+        this.blockRectangle13 = new Block_Rectangle(game,"rock", 1045 + (1160-1045)/2, floorWidth + 150 + 20 + 55 + 30,140, 25);
+        this.blockRectangle14 = new Block_Rectangle(game,"rock", 1440 + (1160-1045)/2, floorWidth + 150 + 20 + 55 + 30,140, 25);
 
+        this.blockRectangle19 = new Block_Rectangle(game, "rock", 1000 + 300, floorWidth + 150 + 20 + 55 + 30 + 150 + 35,650, 25);
 
-        this.blockRectangle19 = new Block_Rectangle("rock", 1000, floor + 99 + 20 + 200,620, 25);
-
-        this.blockFrame1 = new Block_Frame("Triangle", "rock",1055 ,floor + 99 + 20 + 200 + 25 , 140);
-        this.blockFrame2 = new Block_Frame("Triangle", "rock",1455 ,floor + 99 + 20 + 200 + 25 , 140);
-
-
-        destroy_r1 = new Click_Button(Red,Red, 200,floor,camera);
-        destroy_r2 = new Click_Button(Red,Red, 160,floor,camera);
-        destroy_b1 = new Click_Button(Black,Black, 20,floor,camera);
-        destroy_y1 = new Click_Button(Yellow,Yellow, 100,floor,camera);
-
-        destroy_baby1 = new Click_Button(baby_pig,baby_pig, Bp1_x,Bp1_y,camera);
-        destroy_baby2 = new Click_Button(baby_pig,baby_pig, Bp2_x,Bp2_y,camera);
-
-        destroy_adult1 = new Click_Button(adult_pig, adult_pig, Ap1_x, Ap1_y,camera);//--------------
-        destroy_adult2 = new Click_Button(adult_pig, adult_pig, Ap2_x, Ap2_y,camera);//
-        destroy_adult3 = new Click_Button(adult_pig, adult_pig, Ap3_x, Ap3_y,camera);
-
-        destroy_king = new Click_Button(king,king, Kp1_x, Kp1_y,camera);
-
-        destroy_r1.setInput(inputMultiplexer);
-        destroy_r2.setInput(inputMultiplexer);
-        destroy_b1.setInput(inputMultiplexer);
-        destroy_y1.setInput(inputMultiplexer);
-
-        destroy_baby1.setInput(inputMultiplexer);
-        destroy_baby2.setInput(inputMultiplexer);
-        destroy_adult1.setInput(inputMultiplexer);
-        destroy_adult2.setInput(inputMultiplexer);
-        destroy_adult3.setInput(inputMultiplexer);
-        destroy_king.setInput(inputMultiplexer);
+//        this.blockFrame1 = new Block_Frame(game,"Square", "wood",1055 , (floorWidth + 99 + 20 + 200 + 25) , 60);
+//        this.blockFrame2 = new Block_Frame(game,"Triangle", "rock",1455 , (floorWidth + 99 + 20 + 200 + 25), 60);
 
         Gdx.input.setInputProcessor(inputMultiplexer);
+        drawfloor();
+        drawcatapult(350, 20);
+        drawcatapult(1950, 100);
+        this.catapult_drag = new Catapult(game,birds,335/PPM, (floorWidth+190)/PPM);
+//
+
+    }
+    public void drawfloor(){
+        floor_body.type = BodyDef.BodyType.StaticBody;
+        floor_body.position.set(0,0);
+        floor = world.createBody(floor_body);
+        PolygonShape floorShape = new PolygonShape();
+        floorShape.setAsBox(viewport.getWorldWidth()/PPM, floorWidth/PPM);
+        floor_fixture.shape = floorShape;
+        floor_fixture.friction = 10f;
+        floor_fixture.restitution = 0.5f;
+        floor.createFixture(floor_fixture);
+        floor.setUserData(this);
+        floorShape.dispose();
 
     }
 
+    public void drawcatapult(float x, float height){
+        catapult_body.type = BodyDef.BodyType.StaticBody;
+        catapult_body.position.set(x/PPM, (floorWidth+20)/PPM);
+        PolygonShape catapultShape = new PolygonShape();
+        catapultShape.setAsBox(10/PPM, height/PPM);
+        catapult_fixture.shape = catapultShape;
+        catapult_fixture.friction = 2f;
+        catapult_fixture.restitution = 0.5f;
+        catapult = world.createBody(catapult_body);
+        catapult.createFixture(catapult_fixture);
+        catapult.setUserData(this);
+        catapultShape.dispose();
+    }
     @Override
-    public void render(float v) {
+    public void render(float deltaTime) {
+        if (isPaused){
+            return;
+        }
+
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
-        camera.update();
+        camera.setToOrtho(false, viewport.getWorldWidth()/(PPM), viewport.getWorldHeight()/(PPM));
+
+        camera.zoom = 1;
         batch.setProjectionMatrix(camera.combined);
+        camera.update();
+        world.setContactListener(game.getContactListener());
+        catapult_drag.setCatapultInput(deltaTime);
+
+        world.step(deltaTime,6,2);
+        box2DDebugRenderer.render(world, camera.combined);
+
+        for(Body b: destroyBody){
+            if(b!= null && !destroyBody.isEmpty()){
+                if (b.getUserData() instanceof Baby_pig){
+                    score += 200;
+                }
+                if (b.getUserData() instanceof Block_Rectangle){
+                    score +=200;
+                }
+                if (b.getUserData() instanceof Adult_pig){
+                    score += 500;
+                    kills--;
+                }
+                if (b.getUserData() instanceof King_pig){
+                    score += 2000;
+                    kills--;
+                }
+                world.destroyBody(b);
+            }
+        }
+        destroyBody.clear();
 
         batch.begin();
-//        font.getData().setScale(0.9f);
-        batch.draw(level_image,0, 0,  viewport.getWorldWidth(), viewport.getWorldHeight());
-        batch.draw(catapult, 300, floor, 80, 200);
+
+        batch.draw(level_image,0, 0,  viewport.getWorldWidth()/PPM, viewport.getWorldHeight()/PPM);
+        batch.draw(cata, 300/PPM, floorWidth/PPM, 80/PPM, 200/PPM);
         birdRed1.draw_object(batch);
         birdRed2.draw_object(batch);
         birdBlack1.draw_object(batch);
         birdYellow1.draw_object(batch);
-        baby_pig1.draw_Pig(batch);
-        baby_pig2.draw_Pig(batch);
-        adult_pig1.draw_Pig(batch);
-        adult_pig2.draw_Pig(batch);
-        adult_pig3.draw_Pig(batch);
-        kingpin.draw_Pig(batch);
+//        baby_pig1.draw_Pig(deltaTime, batch);
+//        baby_pig2.draw_Pig(deltaTime, batch);
+        adult_pig1.draw_Pig(deltaTime, batch);
+        adult_pig2.draw_Pig(deltaTime, batch);
+        adult_pig3.draw_Pig(deltaTime, batch);
+        kingpin.draw_Pig(deltaTime, batch);
         pause_Button.draw(batch);
         restart_button.draw(batch);
-        font.getData().setScale(0.9f);
 
-        font.draw(batch, "Score", viewport.getWorldWidth()-250, viewport.getWorldHeight()-10);
-        int s =score.toString().length();
+        font.getData().setScale((float) (0.9/PPM));
+//        font.getData().setSpacing(2f);
+
+        font.draw(batch, "Score", (viewport.getWorldWidth()-300)/PPM, (viewport.getWorldHeight()-10)/PPM);
+        float s =score.toString().length()/PPM;
+        font.getData().setScale((float) (0.9));
         GlyphLayout glyphLayout = new GlyphLayout();
         glyphLayout.setText(font, score.toString());
+        font.getData().setScale((float) (0.9/PPM));
 
-        font.draw(batch, score.toString(), viewport.getWorldWidth()-glyphLayout.width, viewport.getWorldHeight()-glyphLayout.height);
 
-        blockRectangle1.draw_obstacle(batch);
-        blockRectangle2.draw_obstacle(batch);
-        blockRectangle3.draw_obstacle(batch);
-        blockRectangle4.draw_obstacle(batch);
-        blockRectangle5.draw_obstacle(batch);
-        blockRectangle6.draw_obstacle(batch);
-        blockRectangle7.draw_obstacle(batch);
-        blockRectangle8.draw_obstacle(batch);
-        blockRectangle9.draw_obstacle(batch);
-        blockRectangle10.draw_obstacle(batch);
-        blockRectangle11.draw_obstacle(batch);
-        blockRectangle12.draw_obstacle(batch);
-        blockRectangle13.draw_obstacle(batch);
-        blockRectangle14.draw_obstacle(batch);
-        blockRectangle15.draw_obstacle(batch);
-        blockRectangle16.draw_obstacle(batch);
-        blockRectangle17.draw_obstacle(batch);
-        blockRectangle18.draw_obstacle(batch);
-        blockRectangle19.draw_obstacle(batch);
+        font.draw(batch, score.toString() , (viewport.getWorldWidth())/PPM - glyphLayout.width/PPM, (viewport.getWorldHeight()-80)/PPM);
 
-        blockFrame1.draw_frame(batch);
-        blockFrame2.draw_frame(batch);
+
+        blockRectangle1.draw_Block(deltaTime,batch);
+        blockRectangle2.draw_Block(deltaTime,batch);
+        blockRectangle3.draw_Block(deltaTime, batch);
+        blockRectangle4.draw_Block(deltaTime, batch);
+        blockRectangle5.draw_Block(deltaTime, batch);
+        blockRectangle6.draw_Block(deltaTime, batch);
+        blockRectangle7.draw_Block(deltaTime, batch);
+        blockRectangle8.draw_Block(deltaTime, batch);
+        blockRectangle9.draw_Block(deltaTime, batch);
+        blockRectangle10.draw_Block(deltaTime, batch);
+        blockRectangle11.draw_Block(deltaTime, batch);
+        blockRectangle12.draw_Block(deltaTime, batch);
+        blockRectangle13.draw_Block(deltaTime, batch);
+        blockRectangle14.draw_Block(deltaTime, batch);
+        blockRectangle15.draw_Block(deltaTime, batch);
+        blockRectangle16.draw_Block(deltaTime, batch);
+        blockRectangle17.draw_Block(deltaTime, batch);
+        blockRectangle18.draw_Block(deltaTime, batch);
+
+        blockRectangle19.draw_Block(deltaTime, batch);
+
+//        blockFrame1.draw_Block(deltaTime, batch);
+//        blockFrame2.draw_Block(deltaTime, batch);
+        birdYellow1.draw_object(batch);
+        batch.draw(cata, 300, floorWidth, 1000, 1000);  // useless
+        catapult_drag.renderCatapult();
         batch.end();
-        update(v);
+        update(deltaTime);
+
     }
 
     @Override
     public void resize(int i, int i1) {
         viewport.update(i, i1);
+
         camera.position.set(viewport.getWorldWidth() / 2 , viewport.getWorldHeight() / 2, 0);
         camera.update();
 
-        pause_Button.set_Position(15, viewport.getWorldHeight()-165);
-        restart_button.set_Position(200, viewport.getWorldHeight()-165);
-        birdRed1.set_bird(200, floor);
-        destroy_r1.set_Position(200,floor);
+        pause_Button.set_Position(15/PPM, (viewport.getWorldHeight()-190)/PPM);
+        restart_button.set_Position(210/PPM,(viewport.getWorldHeight()-190)/PPM);
+        birdRed1.set_bird(300/PPM, (floorWidth+25)/PPM);
 
-        birdRed2.set_bird(160, floor);
-        destroy_r2.set_Position(160,floor);
+        birdRed2.set_bird(260/PPM, (floorWidth+25)/PPM);
 
-        birdBlack1.set_bird(20, floor);
-        destroy_b1.set_Position(10,floor);
+        birdBlack1.set_bird(120/PPM, (floorWidth+25)/PPM);
 
-        birdYellow1.set_bird(100, floor);
-        destroy_y1.set_Position(100,floor);
+        birdYellow1.set_bird(200/PPM, (floorWidth+25)/PPM);
 
-        // PIGS
-        baby_pig1.setPig(Bp1_x, Bp1_y);
-        destroy_baby1.set_Position(Bp1_x, Bp1_y);
 
-        baby_pig2.setPig(Bp2_x,Bp2_y);
-        destroy_baby2.set_Position(Bp2_x,Bp2_y);
-
-        adult_pig1.setPig(Ap1_x,Ap1_y);//------------------
-        destroy_adult1.set_Position(Ap1_x,Ap1_y);//------------
-        adult_pig2.setPig(Ap2_x, Ap2_y);//---------------
-        destroy_adult2.set_Position(Ap2_x, Ap2_y);//--------------
+//        baby_pig1.setPig(Bp1_x, Bp1_y);
+//        baby_pig2.setPig(Bp2_x,Bp2_y);
+        adult_pig1.setPig(Ap1_x,Ap1_y);
+        adult_pig2.setPig(Ap2_x, Ap2_y);
         adult_pig3.setPig(Ap3_x,Ap3_y);
-        destroy_adult3.set_Position(Ap3_x,Ap3_y);
         kingpin.setPig(Kp1_x,Kp1_y);
-        destroy_king.set_Position(Kp1_x,Kp1_y);
+        // 5
+        blockRectangle1.setblock(1200, floorWidth + 5);
+        blockRectangle2.setblock(1000, floorWidth + 5);
+        blockRectangle4.setblock(1600, floorWidth + 5);
+        blockRectangle5.setblock(1400, floorWidth + 5);
+        // 10
+        blockRectangle3.setblock(1000 + 100, floorWidth + 105 + 10);
+        blockRectangle6.setblock(1400 + 100, floorWidth + 105 + 10);
+        // 15
+        blockRectangle7.setblock(1440, floorWidth + 150 + 20 + 15);
+        blockRectangle10.setblock(1560, floorWidth + 150 + 20 + 15);
+        blockRectangle8.setblock(1045, floorWidth + 150 + 20 + 15);
+        blockRectangle9.setblock(1160, floorWidth + 150 + 20 + 15);
+        // 20
+        blockRectangle11.setblock(1045 + (1160-1045)/2,floorWidth + 150 + 20 + 55 + 20);
+        blockRectangle12.setblock(1440 + (1560-1440)/2,floorWidth + 150 + 20 + 55 + 20);
+        // 25
+        blockRectangle15.setblock(1000+20, floorWidth + 150 + 50 + 50 + 25);
+        blockRectangle16.setblock(1400+20, floorWidth + 150 + 50 + 50 + 25);
+        blockRectangle17.setblock(1200-20, floorWidth + 150 + 50 + 50 + 25);
+        blockRectangle18.setblock(1600-20, floorWidth + 150 + 50 + 50 + 25);
+        // 30
+        blockRectangle13.setblock(1045 + (1160-1045)/2, floorWidth + 150 + 20 + 55 + 30 + 30);
+        blockRectangle14.setblock(1440 + (1160-1045)/2, floorWidth + 150 + 20 + 55 + 30 + 30);
+        // 35
+        blockRectangle19.setblock(1000 + 300, floorWidth + 150 + 20 + 55 + 30 + 150 + 35);
+
+//        blockFrame1.setblock(1055 , floorWidth + 99 + 20 + 200 + 25);
 
     }
 
     @Override
     public void pause() {
-
+        world.setContinuousPhysics(false);
+//        kingpin.setPig(400,400);
+//        kingpin.setPig(kingpin.getBody().getPosition().x,kingpin.getBody().getPosition().y);
     }
-
     @Override
     public void resume() {
-
+        isPaused = false;
+        world.setContinuousPhysics(true);
     }
 
     @Override
     public void hide() {
+//        kingpin.setPig(400,400);
+//        kingpin.setPig(kingpin.getBody().getPosition().x,kingpin.getBody().getPosition().y);
 
     }
 
     @Override
     public void dispose() {
         level_image.dispose();
-        catapult.dispose();
+        cata.dispose();
         pause_before.dispose();
         pause_after.dispose();
         birdRed1.dispose();
@@ -428,6 +504,8 @@ public class level1 implements Screen {
         birdRed1.dispose();
         birdRed2.dispose();
         adult_pig1.dispose();
-
+        world.dispose();
+        box2DDebugRenderer.dispose();
     }
 }
+

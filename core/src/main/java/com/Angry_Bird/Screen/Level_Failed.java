@@ -5,6 +5,7 @@ import com.Angry_Bird.launch;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -16,6 +17,7 @@ public class Level_Failed implements Screen {
     private final launch game;
     private OrthographicCamera camera;
     private Viewport viewport;
+    private AssetManager assetManager;
 
     private SpriteBatch batch;
     private Texture launch_image;
@@ -43,6 +45,7 @@ public class Level_Failed implements Screen {
         this.viewport = game.getViewport();
         this.batch = game.getBatch();
         this.font = game.getFont();
+        this.assetManager = game.getAssetManager();
         this.inputMultiplexer = new InputMultiplexer();
 
         Gdx.input.setInputProcessor(inputMultiplexer);
@@ -60,11 +63,11 @@ public class Level_Failed implements Screen {
     @Override
     public void show() {
 //        this.launch_image = new Texture("pausePage.png");
-        this.launch_image = new Texture("Level failed.png");
-        this.restartB = new Texture("restartB.png");
-        this.restartA = new Texture("restartA.png");
-        this.menuB = new Texture("level menuB.png");
-        this.menuA = new Texture("level menuA.png");
+        this.launch_image = assetManager.get("Level failed.png", Texture.class);
+        this.restartB = assetManager.get("restartB.png", Texture.class);
+        this.restartA = assetManager.get("restartA.png", Texture.class);
+        this.menuB = assetManager.get("level menuB.png", Texture.class);
+        this.menuA = assetManager.get("level menuA.png", Texture.class);
 
         this.restart_button = new Click_Button(restartB, restartA, viewport.getWorldWidth()/2 -50, 100, camera);
         restart_button.setInput(inputMultiplexer);
