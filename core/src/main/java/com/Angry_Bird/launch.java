@@ -11,7 +11,7 @@ import com.Angry_Bird.Screen.*;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
-
+import java.util.HashMap;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Camera;
@@ -27,20 +27,21 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import java.io.*;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.Set;
 
 
-class Data{
+
+class Data implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private String user_id;
     private String password;
-    private float level1_score = 100;
-    private float level2_score = 100;
-    private float level3_score = 100;
+    private float level1_score = 0;
+    private float level2_score = 0;
+    private float level3_score = 0;
 
-    public Data(String user_id, String password){
+    public Data(String user_id, String password) {
         this.user_id = user_id;
         this.password = password;
     }
@@ -76,42 +77,102 @@ class Data{
         this.level3_score += level3_score;
     }
 }
-public class launch extends Game {
-    // DataBase
-    private static HashMap<String, Data> data;
 
-    public boolean found_id(String id){
+
+
+public class launch extends Game {
+
+    private static HashMap<String, Data> data = new HashMap<>();
+
+    private static final String FILE_NAME = "userdata.ser";
+
+    private void ensureDataLoaded() {
+        if (data == null || data.isEmpty()) {
+            loadData();
+        }
+    }
+
+    public static void saveData() {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(FILE_NAME))) {
+            oos.writeObject(data);
+            System.out.println("Data saved successfully.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void loadData() {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(FILE_NAME))) {
+            data = (HashMap<String, Data>) ois.readObject();
+            System.out.println("Data loaded successfully.");
+        } catch (FileNotFoundException e) {
+            System.out.println("No saved data file found. Starting fresh.");
+            data = new HashMap<>();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public boolean found_id(String id) {
+        ensureDataLoaded();
         return data.containsKey(id);
     }
-    public boolean found_password(String id, String password){
-        return data.get(id).getPassword().equals(password);
+
+    public boolean found_password(String id, String password) {
+        ensureDataLoaded();
+        Data user = data.get(id);
+        return user != null && user.getPassword().equals(password);
     }
-    public void signUp(String id, String password){
+
+    public void signUp(String id, String password) {
+        ensureDataLoaded();
         data.put(id, new Data(id, password));
+        saveData();
     }
-    public void eraseData(String id){
+
+    public void eraseData(String id) {
+        ensureDataLoaded();
         data.remove(id);
+        saveData();
     }
-    public Data getData(String id){
+
+    public Data getData(String id) {
+        ensureDataLoaded();
         return data.get(id);
     }
-    public float getLevel1_score(String id){
+
+    public float getLevel1_score(String id) {
+        ensureDataLoaded();
         return data.get(id).getL1_score();
     }
-    public float getLevel2_score(String id){
+
+    public float getLevel2_score(String id) {
+        ensureDataLoaded();
         return data.get(id).getL2_score();
     }
-    public float getLevel3_score(String id){
-        return data.get(id).getL2_score();
+
+    public float getLevel3_score(String id) {
+        ensureDataLoaded();
+        return data.get(id).getL3_score();
     }
-    public void setLevel1_score(String id, float level1_score){
+
+    public void setLevel1_score(String id, float level1_score) {
+        ensureDataLoaded();
         data.get(id).setL1_score(level1_score);
+        saveData();
     }
-    public void setLevel2_score(String id, float level2_score){
+
+    public void setLevel2_score(String id, float level2_score) {
+        ensureDataLoaded();
         data.get(id).setL2_score(level2_score);
+        saveData();
     }
-    public void setLevel3_score(String id, float level3_score){
+
+    public void setLevel3_score(String id, float level3_score) {
+        ensureDataLoaded();
         data.get(id).setL3_score(level3_score);
+        saveData(); // Save data after updating score
     }
 
     private SpriteBatch batch;
@@ -166,6 +227,8 @@ public class launch extends Game {
     private static Exit_Screen exitScreen;
     private static Level_Screen levelScreen;
     private static level1 level_1;
+    private static level2 level_2;
+    private static level3 level_3;
     private static Level_Failed levelFailed;
     private static Level_Passed levelPassed;
     private static Pause_Screen pauseScreen;
@@ -207,9 +270,17 @@ public class launch extends Game {
         return level_1;
     }
 
+    public level2 getLevel_2() { return level_2;}
+
+    public level3 getLevel_3() { return level_3 ; }
+
     public void setLevel_1(level1 level_1) {
         this.level_1 = level_1;
     }
+
+    public void setLevel_2(level2 level_2) { this.level_2 = level_2;}
+
+    public void setLevel_3(level3 level_3) { this.level_3 = level_3;}
 
     public Level_Screen getLevelScreen() {
         return levelScreen;
@@ -451,7 +522,7 @@ public class launch extends Game {
             }
         };
         world.setContactListener(getContactListener());
-        data = new HashMap<String, Data>();
+        data = new HashMap<>();
 
         //----------------font type casting
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fnt.ttf"));
@@ -473,11 +544,11 @@ public class launch extends Game {
         music.setLooping(true);
         music.setVolume(0.1f);
         music.play();
-//        music.pause();//----------------
+        music.pause();//----------------
 
         sound = Gdx.audio.newSound(Gdx.files.internal("click1.mp3"));
         sound.resume();
-//        pauseSound();//----------------
+        pauseSound();//----------------
 
         loadScreen = new load_Screen(this);
         mainMenuScreen = new MainMenuScreen(this);
@@ -489,7 +560,7 @@ public class launch extends Game {
         level_1 = new level1(this);
         levelFailed = new Level_Failed(this, level_1);
         levelPassed = new Level_Passed(this, level_1);
-        pauseScreen = new Pause_Screen(this, level_1);
+        pauseScreen = new Pause_Screen(this);
 
         this.setScreen(loadScreen);
 //        this.setScreen(new Catapult(this,0,0));

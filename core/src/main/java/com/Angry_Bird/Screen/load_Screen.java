@@ -152,6 +152,7 @@ public class load_Screen implements Screen {
         assetManager.load("blackbirdhighres.png", Texture.class);
         assetManager.load("yellow.png", Texture.class);
         assetManager.load("pausePage.png", Texture.class);
+        assetManager.load("Level failed2.png", Texture.class);
     }
 
     @Override

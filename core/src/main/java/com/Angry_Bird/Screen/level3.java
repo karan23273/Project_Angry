@@ -22,14 +22,14 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.utils.Array;
+    import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.util.ArrayList;
 import java.util.Queue;
 
-public class level1 implements Screen {
+public class level3 implements Screen {
     private Integer score = 0;
     private final launch game;
     private final float floorWidth = 196;
@@ -51,6 +51,7 @@ public class level1 implements Screen {
     private Bird_Red birdRed2;
     private Bird_Black birdBlack1;
     private Bird_Yellow birdYellow1;
+    private Bird_Black birdBlack2;
 
 
     // Using in buttons only
@@ -76,21 +77,21 @@ public class level1 implements Screen {
     private Texture adult_pig;
 
     private float Ap1_x = 1050+30 + 20;
-    private float Ap1_y = floorWidth +99+20 + 20;
+    private float Ap1_y = floorWidth +20+100+50+40;
     private Adult_pig adult_pig1;
 
     private float Ap2_x = 1450+30 + 20;
-    private float Ap2_y = floorWidth +99+20 + 20;
+    private float Ap2_y = floorWidth +20+100+50+40;
     private Adult_pig adult_pig2;
 
     private float Ap3_x = 1455 +40;
-    private float Ap3_y = floorWidth +99+20 + 55 + 25 + 25 + 80;
+    private float Ap3_y = floorWidth +20;
     private Adult_pig adult_pig3;
 
 
     private Texture king;
     private float Kp1_x = 1055 + 40;
-    private float Kp1_y =  floorWidth +99+20 + 55 + 25 + 25 + 80;
+    private float Kp1_y =  floorWidth +20;
     private King_pig kingpin;
 
     private Block_Rectangle blockRectangle1;
@@ -136,7 +137,7 @@ public class level1 implements Screen {
     private float wait = 0;
     private boolean isPaused = false;
 
-    public level1(final launch game) {
+    public level3(final launch game) {
         this.PPM = game.getPPM();
         this.game = game;
         this.camera = game.getCamera();
@@ -165,30 +166,27 @@ public class level1 implements Screen {
     private void update(float delta) {
 
         if (pause_Button.clicked()) {
-//            red1.destroy();
 //            wait += delta;
 //            if (wait >0.5f){
 //                isPaused = true;
-                pause();
-            game.getPauseScreen().setCurrLevel(1);
+//                pause();
+            game.getPauseScreen().setCurrLevel(3);
             game.setScreen(game.getPauseScreen());
-
 //                wait = 0;
 //            }
         }
         if (restart_button.clicked()){
             game.setWorld(new World(new Vector2(0, -9.8f),true));
-            game.setLevel_1(new level1(game));
-            game.setScreen(game.getLevel_1());
+            game.setLevel_3(new level3(game));
+            game.setScreen(game.getLevel_3());
         }
 
 
         if (kills<=0) {
             wait+=delta;
             if (wait>1){
-                game.setLevel2_score(game.getLoginScreen().getUserid(), 1);
-                game.setLevel1_score(game.getLoginScreen().getUserid(), score);
-                game.getLevelPassed().setNext_level(2);
+                game.setLevel3_score(game.getLoginScreen().getUserid(), score);
+                game.getLevelPassed().setNext_level(3);
                 game.getLevelPassed().setLevel_score(score);
                 game.setScreen(game.getLevelPassed());
                 wait = 0;
@@ -196,7 +194,7 @@ public class level1 implements Screen {
 
         }
         else if(kills>0 && catapult_drag.birdsLeft()){
-            game.getLevelFailed().setCurrLevel(1);
+            game.getLevelFailed().setCurrLevel(3);
             game.setScreen(game.getLevelFailed());
 //            System.out.printf("Fial");
         }
@@ -231,52 +229,54 @@ public class level1 implements Screen {
         restart_button.setInput(inputMultiplexer);
 
 //        birds.add(new Bird_Red(game, 300/PPM, (floorWidth+190)/PPM).getBody());
-        this.birdRed1 = new Bird_Red(game, 300/PPM, (floorWidth+25)/PPM);
+        this.birdRed1 = new Bird_Red(game, 360/PPM, (floorWidth+25)/PPM);
         birds.add(birdRed1.getBody());
-        this.birdRed2 = new Bird_Red(game, 260/PPM, (floorWidth+25)/PPM);
+        this.birdRed2 = new Bird_Red(game, 320/PPM, (floorWidth+25)/PPM);
         birds.add(birdRed2.getBody());
-        this.birdYellow1 = new Bird_Yellow(game, 200/PPM, (floorWidth+25)/PPM);
+        this.birdYellow1 = new Bird_Yellow(game, 260/PPM, (floorWidth+25)/PPM);
         birds.add(birdYellow1.getBody());
-        this.birdBlack1 = new Bird_Black(game, 120/PPM, (floorWidth+25)/PPM);
+        this.birdBlack1 = new Bird_Black(game, 180/PPM, (floorWidth+25)/PPM);
         birds.add(birdBlack1.getBody());
+        this.birdBlack2 = new Bird_Black(game,120/PPM,(floorWidth+25)/PPM);
+        birds.add(birdBlack2.getBody());
         // pig
 //        this.baby_pig1 = new Baby_pig(game, Bp1_x, Bp1_y);
 //        this.baby_pig2 = new Baby_pig(game, Bp2_x, Bp2_y);
         this.kingpin = new King_pig(game, Kp1_x, Kp1_y);
-        this.adult_pig1 = new Adult_pig(game, Ap1_x, Ap1_y);
-        this.adult_pig2 = new Adult_pig(game, Ap2_x, Ap2_y);
+
         this.adult_pig3 = new Adult_pig(game, Ap3_x, Ap3_y);
-        this.blockRectangle1 = new Block_Rectangle(game,"wood", 1200 , floorWidth,30, 100);
-        this.blockRectangle2 = new Block_Rectangle(game,"wood", 1000, floorWidth,30, 100);
+//        this.blockRectangle1 = new Block_Rectangle(game,"wood", 1200 , floorWidth,30, 100);
+//        this.blockRectangle2 = new Block_Rectangle(game,"wood", 1000, floorWidth,30, 100);
+//
+//
+//        this.blockRectangle4 = new Block_Rectangle(game,"wood", 1600, floorWidth,30, 100);
+//        this.blockRectangle5 = new Block_Rectangle(game,"wood", 1400, floorWidth,30, 100);
 
+        this.blockRectangle3 = new Block_Rectangle(game,"rock", 1000 + 100, floorWidth ,230, 20);
+        this.blockRectangle6 = new Block_Rectangle(game,"rock", 1400 + 100, floorWidth,230, 20);
 
-        this.blockRectangle4 = new Block_Rectangle(game,"wood", 1600, floorWidth,30, 100);
-        this.blockRectangle5 = new Block_Rectangle(game,"wood", 1400, floorWidth,30, 100);
+        this.blockRectangle8 = new Block_Rectangle(game,"wood", 1045, floorWidth  + 20,25, 120);
+        this.blockRectangle9 = new Block_Rectangle(game,"wood", 1160, floorWidth + 20,25, 120);
+        this.blockRectangle7 = new Block_Rectangle(game,"wood", 1430, floorWidth  + 20,25, 120);
+        this.blockRectangle10 = new Block_Rectangle(game,"wood", 1580, floorWidth  +20,25, 120);
 
-        this.blockRectangle3 = new Block_Rectangle(game,"rock", 1000 + 100, floorWidth + 105,230, 20);
-        this.blockRectangle6 = new Block_Rectangle(game,"rock", 1400 + 100, floorWidth + 105,230, 20);
+//        this.blockRectangle15 = new Block_Rectangle(game,"wood", 1000+20, floorWidth   + 50,25, 300);
+//        this.blockRectangle17 = new Block_Rectangle(game,"wood", 1200-20, floorWidth   + 50,25, 300);
+//        this.blockRectangle16 = new Block_Rectangle(game,"wood", 1400+20, floorWidth   + 50,25, 300);
+//        this.blockRectangle18 = new Block_Rectangle(game,"wood", 1600-20, floorWidth   + 50,25, 300);
 
-        this.blockRectangle8 = new Block_Rectangle(game,"wood", 1045, floorWidth + 150 + 20,25, 100);
-        this.blockRectangle9 = new Block_Rectangle(game,"wood", 1160, floorWidth + 150 + 20,25, 100);
-        this.blockRectangle7 = new Block_Rectangle(game,"wood", 1430, floorWidth + 150 + 20,25, 100);
-        this.blockRectangle10 = new Block_Rectangle(game,"wood", 1580, floorWidth + 150 +20,25, 100);
+        this.blockRectangle11 = new Block_Rectangle(game,"wood", 1045 + (1160-1045)/2, floorWidth + 120,140+20, 25);
+        this.blockRectangle12 = new Block_Rectangle(game,"wood", 1440 + (1160-1045)/2, floorWidth + 120,140+20, 25);
 
-        this.blockRectangle15 = new Block_Rectangle(game,"wood", 1000+20, floorWidth + 150 + 50 + 50,25, 300);
-        this.blockRectangle17 = new Block_Rectangle(game,"wood", 1200-20, floorWidth + 150 + 50 + 50,25, 300);
-        this.blockRectangle16 = new Block_Rectangle(game,"wood", 1400+20, floorWidth + 150 + 50 + 50,25, 300);
-        this.blockRectangle18 = new Block_Rectangle(game,"wood", 1600-20, floorWidth + 150 + 50 + 50,25, 300);
+        this.blockRectangle13 = new Block_Rectangle(game,"rock", 1045 + (1160-1045)/2, floorWidth + 120+25,140, 25);
+        this.blockRectangle14 = new Block_Rectangle(game,"rock", 1440 + (1160-1045)/2, floorWidth + 120+25,140, 25);
 
-        this.blockRectangle11 = new Block_Rectangle(game,"wood", 1045 + (1160-1045)/2, floorWidth + 150 + 20 + 55,140, 25);
-        this.blockRectangle12 = new Block_Rectangle(game,"wood", 1440 + (1160-1045)/2, floorWidth + 150 + 20 + 55,140, 25);
-
-        this.blockRectangle13 = new Block_Rectangle(game,"rock", 1045 + (1160-1045)/2, floorWidth + 150 + 20 + 55 + 30,140, 25);
-        this.blockRectangle14 = new Block_Rectangle(game,"rock", 1440 + (1160-1045)/2, floorWidth + 150 + 20 + 55 + 30,140, 25);
-
-        this.blockRectangle19 = new Block_Rectangle(game, "rock", 1000 + 300, floorWidth + 150 + 20 + 55 + 30 + 150 + 35,650, 25);
+//        this.blockRectangle19 = new Block_Rectangle(game, "rock", 1000 + 300, floorWidth + 150 + 20 + 55 + 30 + 150 + 35,650, 25);
 
 //        this.blockFrame1 = new Block_Frame(game,"Square", "wood",1055 , (floorWidth + 99 + 20 + 200 + 25) , 60);
 //        this.blockFrame2 = new Block_Frame(game,"Triangle", "rock",1455 , (floorWidth + 99 + 20 + 200 + 25), 60);
-
+        this.adult_pig1 = new Adult_pig(game, Ap1_x, Ap1_y);
+        this.adult_pig2 = new Adult_pig(game, Ap2_x, Ap2_y);
         Gdx.input.setInputProcessor(inputMultiplexer);
         drawfloor();
         drawcatapult(350, 20);
@@ -360,10 +360,10 @@ public class level1 implements Screen {
         birdRed2.draw_object(batch);
         birdBlack1.draw_object(batch);
         birdYellow1.draw_object(batch);
+        birdBlack2.draw_object(batch);
 //        baby_pig1.draw_Pig(deltaTime, batch);
 //        baby_pig2.draw_Pig(deltaTime, batch);
-        adult_pig1.draw_Pig(deltaTime, batch);
-        adult_pig2.draw_Pig(deltaTime, batch);
+
         adult_pig3.draw_Pig(deltaTime, batch);
         kingpin.draw_Pig(deltaTime, batch);
         pause_Button.draw(batch);
@@ -383,11 +383,11 @@ public class level1 implements Screen {
         font.draw(batch, score.toString() , (viewport.getWorldWidth())/PPM - glyphLayout.width/PPM, (viewport.getWorldHeight()-80)/PPM);
 
 
-        blockRectangle1.draw_Block(deltaTime,batch);
-        blockRectangle2.draw_Block(deltaTime,batch);
+//        blockRectangle1.draw_Block(deltaTime,batch);
+//        blockRectangle2.draw_Block(deltaTime,batch);
         blockRectangle3.draw_Block(deltaTime, batch);
-        blockRectangle4.draw_Block(deltaTime, batch);
-        blockRectangle5.draw_Block(deltaTime, batch);
+//        blockRectangle4.draw_Block(deltaTime, batch);
+//        blockRectangle5.draw_Block(deltaTime, batch);
         blockRectangle6.draw_Block(deltaTime, batch);
         blockRectangle7.draw_Block(deltaTime, batch);
         blockRectangle8.draw_Block(deltaTime, batch);
@@ -397,12 +397,14 @@ public class level1 implements Screen {
         blockRectangle12.draw_Block(deltaTime, batch);
         blockRectangle13.draw_Block(deltaTime, batch);
         blockRectangle14.draw_Block(deltaTime, batch);
-        blockRectangle15.draw_Block(deltaTime, batch);
-        blockRectangle16.draw_Block(deltaTime, batch);
-        blockRectangle17.draw_Block(deltaTime, batch);
-        blockRectangle18.draw_Block(deltaTime, batch);
+        adult_pig1.draw_Pig(deltaTime, batch);
+        adult_pig2.draw_Pig(deltaTime, batch);
+//        blockRectangle15.draw_Block(deltaTime, batch);
+//        blockRectangle16.draw_Block(deltaTime, batch);
+//        blockRectangle17.draw_Block(deltaTime, batch);
+//        blockRectangle18.draw_Block(deltaTime, batch);
 
-        blockRectangle19.draw_Block(deltaTime, batch);
+//        blockRectangle19.draw_Block(deltaTime, batch);
 
 //        blockFrame1.draw_Block(deltaTime, batch);
 //        blockFrame2.draw_Block(deltaTime, batch);
@@ -416,6 +418,7 @@ public class level1 implements Screen {
 
     @Override
     public void resize(int i, int i1) {
+
         viewport.update(i, i1);
 
         camera.position.set(viewport.getWorldWidth() / 2 , viewport.getWorldHeight() / 2, 0);
@@ -423,47 +426,50 @@ public class level1 implements Screen {
 
         pause_Button.set_Position(15/PPM, (viewport.getWorldHeight()-190)/PPM);
         restart_button.set_Position(210/PPM,(viewport.getWorldHeight()-190)/PPM);
-        birdRed1.set_bird(300/PPM, (floorWidth+25)/PPM);
+        birdRed1.set_bird(360/PPM, (floorWidth+25)/PPM);
 
-        birdRed2.set_bird(260/PPM, (floorWidth+25)/PPM);
+        birdRed2.set_bird(320/PPM, (floorWidth+25)/PPM);
 
-        birdBlack1.set_bird(120/PPM, (floorWidth+25)/PPM);
+        birdBlack1.set_bird(180/PPM, (floorWidth+25)/PPM);
 
-        birdYellow1.set_bird(200/PPM, (floorWidth+25)/PPM);
+        birdYellow1.set_bird(260/PPM, (floorWidth+25)/PPM);
+
+        birdBlack2.set_bird(120/PPM,(floorWidth+25)/PPM);
 
 
 //        baby_pig1.setPig(Bp1_x, Bp1_y);
 //        baby_pig2.setPig(Bp2_x,Bp2_y);
-        adult_pig1.setPig(Ap1_x,Ap1_y);
-        adult_pig2.setPig(Ap2_x, Ap2_y);
+
         adult_pig3.setPig(Ap3_x,Ap3_y);
         kingpin.setPig(Kp1_x,Kp1_y);
         // 5
-        blockRectangle1.setblock(1200, floorWidth + 5);
-        blockRectangle2.setblock(1000, floorWidth + 5);
-        blockRectangle4.setblock(1600, floorWidth + 5);
-        blockRectangle5.setblock(1400, floorWidth + 5);
+//        blockRectangle1.setblock(1200, floorWidth + 5);
+//        blockRectangle2.setblock(1000, floorWidth + 5);
+//        blockRectangle4.setblock(1600, floorWidth + 5);
+//        blockRectangle5.setblock(1400, floorWidth + 5);
         // 10
-        blockRectangle3.setblock(1000 + 100, floorWidth + 105 + 10);
-        blockRectangle6.setblock(1400 + 100, floorWidth + 105 + 10);
+        blockRectangle3.setblock(1000 + 100, floorWidth);
+        blockRectangle6.setblock(1400 + 100, floorWidth);
         // 15
-        blockRectangle7.setblock(1440, floorWidth + 150 + 20 + 15);
-        blockRectangle10.setblock(1560, floorWidth + 150 + 20 + 15);
-        blockRectangle8.setblock(1045, floorWidth + 150 + 20 + 15);
-        blockRectangle9.setblock(1160, floorWidth + 150 + 20 + 15);
+        blockRectangle7.setblock(1440, floorWidth +20);
+        blockRectangle10.setblock(1560, floorWidth +20);
+        blockRectangle8.setblock(1045, floorWidth +20);
+        blockRectangle9.setblock(1160, floorWidth +20);
         // 20
-        blockRectangle11.setblock(1045 + (1160-1045)/2,floorWidth + 150 + 20 + 55 + 20);
-        blockRectangle12.setblock(1440 + (1560-1440)/2,floorWidth + 150 + 20 + 55 + 20);
+        blockRectangle11.setblock(1045 + (1160-1045)/2,floorWidth + 180);
+        blockRectangle12.setblock(1440 + (1560-1440)/2,floorWidth + 180);
         // 25
-        blockRectangle15.setblock(1000+20, floorWidth + 150 + 50 + 50 + 25);
-        blockRectangle16.setblock(1400+20, floorWidth + 150 + 50 + 50 + 25);
-        blockRectangle17.setblock(1200-20, floorWidth + 150 + 50 + 50 + 25);
-        blockRectangle18.setblock(1600-20, floorWidth + 150 + 50 + 50 + 25);
+//        blockRectangle15.setblock(1000+20, floorWidth + 150 + 50 + 50 + 25);
+//        blockRectangle16.setblock(1400+20, floorWidth + 150 + 50 + 50 + 25);
+//        blockRectangle17.setblock(1200-20, floorWidth + 150 + 50 + 50 + 25);
+//        blockRectangle18.setblock(1600-20, floorWidth + 150 + 50 + 50 + 25);
         // 30
-        blockRectangle13.setblock(1045 + (1160-1045)/2, floorWidth + 150 + 20 + 55 + 30 + 30);
-        blockRectangle14.setblock(1440 + (1160-1045)/2, floorWidth + 150 + 20 + 55 + 30 + 30);
+        blockRectangle13.setblock(1045 + (1160-1045)/2, floorWidth + 180+25);
+        blockRectangle14.setblock(1440 + (1160-1045)/2, floorWidth + 180+25);
+        adult_pig1.setPig(Ap1_x,Ap1_y);
+        adult_pig2.setPig(Ap2_x, Ap2_y);
         // 35
-        blockRectangle19.setblock(1000 + 300, floorWidth + 150 + 20 + 55 + 30 + 150 + 35);
+//        blockRectangle19.setblock(1000 + 300, floorWidth + 150 + 20 + 55 + 30 + 150 + 35);
 
 //        blockFrame1.setblock(1055 , floorWidth + 99 + 20 + 200 + 25);
 
@@ -499,6 +505,7 @@ public class level1 implements Screen {
         restartA.dispose();
         restartB.dispose();
         birdBlack1.dispose();
+        birdBlack2.dispose();
         Black.dispose();
         Yellow.dispose();
         adult_pig.dispose();
@@ -516,4 +523,3 @@ public class level1 implements Screen {
         box2DDebugRenderer.dispose();
     }
 }
-

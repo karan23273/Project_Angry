@@ -46,8 +46,12 @@ public class Catapult {
     private final float MAX_DRAG_DISTANCE = 5;
     private Body body;
     private ArrayList<Body> birds;
-    private float total_birds;
+    private int total_birds;
     private int index = 0;
+    boolean birdzero = false;
+    public boolean birdsLeft(){
+        return birdzero;
+    }
     public Catapult(launch game,ArrayList<Body> birds ,float x, float y) {
         this.game = game;
         this.world = game.getWorld();
@@ -77,9 +81,10 @@ public class Catapult {
             body.setType(BodyDef.BodyType.StaticBody);
             body.setUserData(body.getUserData());
             index++;
+//            System.out.println(index +" "+ total_birds);
+
 
         }
-//        bird.getBody().setUserData(bird);
     }
 
     // Input handling for dragging
@@ -113,6 +118,9 @@ public class Catapult {
                     }
                     if (index < total_birds) {
                         spawnNewBird();
+                    }else {
+                        birdzero = true;
+                        birds.clear();
                     }
                 }
             }

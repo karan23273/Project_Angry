@@ -41,7 +41,24 @@ public class Level_Passed implements Screen {
     private InputMultiplexer inputMultiplexer;
 
     private level1 level;
+    private level2 level2;
+    private level3 level3;
+    private Integer level_score;
 
+    private int current_level;
+    public void setcurrent_level(Integer current_level) {
+        this.current_level = current_level;
+    }
+
+    private int next_level;
+
+    public void setNext_level(int next_level) {
+        this.next_level = next_level;
+    }
+
+    public void setLevel_score(Integer level_score) {
+        this.level_score = level_score;
+    }
 
 
     public Level_Passed(final launch game, level1 level) {
@@ -59,12 +76,31 @@ public class Level_Passed implements Screen {
 
     private void update(float delta) {
         if (nextLevelbutton.clicked()) {
+            if (next_level == 2) {
+                game.setWorld(new World(new Vector2(0, -9.8f),true));
+                game.setLevel_2(new level2(game));
+                game.setScreen(game.getLevel_2());
+            } else if (next_level == 3) {
+                game.setWorld(new World(new Vector2(0, -9.8f),true));
+                game.setLevel_3(new level3(game));
+                game.setScreen(game.getLevel_3());
+            }
 //            game.setScreen(level);
         }
         if (restart_button.clicked()){
-            game.setWorld(new World(new Vector2(0, -9.8f),true));
-            game.setLevel_1(new level1(game));
-            game.setScreen(game.getLevel_1());
+            if (next_level == 2){
+                game.setWorld(new World(new Vector2(0, -9.8f),true));
+                game.setLevel_1(new level1(game));
+                game.setScreen(game.getLevel_1());
+            }else if (next_level == 3){
+                game.setWorld(new World(new Vector2(0, -9.8f),true));
+                game.setLevel_2(new level2(game));
+                game.setScreen(game.getLevel_2());
+            }else{
+                game.setWorld(new World(new Vector2(0, -9.8f),true));
+                game.setLevel_3(new level3(game));
+                game.setScreen(game.getLevel_3());
+            }
         }
         if (menu.clicked()){
             game.setScreen(game.getMainMenuScreen());
@@ -107,19 +143,19 @@ public class Level_Passed implements Screen {
         batch.draw(new Texture("level clear 2.png"), 600, 0, 750, viewport.getWorldHeight());
 
             font.getData().setScale(0.9f);
-        if (game.getLevel_1().getScore() >= 4000){
+        if (level_score >= 4000){
             batch.draw(new Texture("star 1.png"), 580,  640, 300,300);
             batch.draw(new Texture("star 2.png"), 820,  670, 280,280);
             batch.draw(new Texture("star 3.png"), 1050,  650, 300,300);
-            font.draw(batch, game.getLevel_1().getScore().toString(), 860, 670);
+            font.draw(batch, level_score.toString(), 860, 670);
 //            System.out.println("few");
-        } else if (game.getLevel_1().getScore() < 4000 && game.getLevel_1().getScore() > 3000 ) {
+        } else if (level_score < 4000 && level_score > 3000 ) {
             batch.draw(new Texture("star 1.png"), 580,  650, 300,300);
             batch.draw(new Texture("star 2.png"), 820,  670, 280,280);
-            font.draw(batch, game.getLevel_1().getScore().toString(), 860, 670);
+            font.draw(batch, level_score.toString(), 860, 670);
         }else {
             batch.draw(new Texture("star 1.png"), 580,  650, 300,300);
-            font.draw(batch, game.getLevel_1().getScore().toString(), 860, 670);
+            font.draw(batch, level_score.toString(), 860, 670);
 
         }
 

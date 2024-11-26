@@ -152,20 +152,20 @@ public class LoginScreen implements Screen {
 
     private void signUp(float delta){
 
-//        if (usernameField.getText().trim().isEmpty() || passwordField.getText().trim().isEmpty()) {
-//            font.setColor(Color.RED);
-//            font.getData().setScale(0.4f);
-//            renderDuration += delta;
-//            if (renderDuration <= 1){
-//                font.draw(batch, "Details cannot be empty", viewport.getWorldWidth() / 2 - 150, viewport.getWorldHeight() / 2-110);
-//            }
-//            font.setColor(Color.WHITE);
-//            if (renderDuration >= 1){
-//                sign_in_button.setOff();
-//                renderDuration = 0;
-//            }
-//            return;
-//        }
+        if (usernameField.getText().trim().isEmpty() || passwordField.getText().trim().isEmpty()) {
+            font.setColor(Color.RED);
+            font.getData().setScale(0.4f);
+            renderDuration += delta;
+            if (renderDuration <= 1){
+                font.draw(batch, "Details cannot be empty", viewport.getWorldWidth() / 2 - 150, viewport.getWorldHeight() / 2-110);
+            }
+            font.setColor(Color.WHITE);
+            if (renderDuration >= 1){
+                sign_in_button.setOff();
+                renderDuration = 0;
+            }
+            return;
+        }
 
         if (game.found_id(usernameField.getText())) {
                 font.setColor(Color.RED);
@@ -200,6 +200,7 @@ public class LoginScreen implements Screen {
         }
         if (sign_in_button.isOn()) {
             signUp(delta);
+            game.signUp(usernameField.getText(), passwordField.getText());
             if (renderDuration >= 1 && !sign_in_success){
                 sign_in_button.setOff();
                 renderDuration = 0;

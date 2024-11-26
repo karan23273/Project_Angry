@@ -36,7 +36,6 @@ public class Baby_pig implements Pig {
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set((pig_sprite.getX() -radius)/PPM, (pig_sprite.getY() -radius)/PPM);
 
-        // Define Box2D CircleShape for the pig's physics body
         CircleShape circle = new CircleShape();
         circle.setRadius(radius/PPM); // Adjust radius for Box2D physics (in meters)
 
@@ -53,8 +52,8 @@ public class Baby_pig implements Pig {
     @Override
     public void setPig(float x, float y) {
 //        pig_sprite.setPosition((x - radius) / PPM * PPM, (y - radius) / PPM * PPM); // Set sprite position in pixels
+        body.setTransform(x / PPM, y / PPM, body.getAngle());
         pig_sprite.setPosition(x/PPM, y/PPM);
-        body.setTransform(x / PPM, y / PPM, body.getAngle()); // Set Box2D body position in meters
     }
 
     @Override

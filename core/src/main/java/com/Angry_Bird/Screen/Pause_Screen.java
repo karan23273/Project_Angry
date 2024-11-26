@@ -9,31 +9,22 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.Viewport;
-
-import static com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable.draw;
 
 public class Pause_Screen implements Screen {
     private final launch game;
     private OrthographicCamera camera;
     private Viewport viewport;
     private AssetManager assetManager;
-
     private SpriteBatch batch;
     private Texture launch_image;
     private BitmapFont font;
 
     private Click_Button continue_button;
-
     private Texture no_before;
     private Texture no_after;
-
 
     private Click_Button restart_button;
     private Texture restartB;
@@ -43,27 +34,25 @@ public class Pause_Screen implements Screen {
     private Texture menuB;
     private Texture menuA;
 
-
     private InputMultiplexer inputMultiplexer;
 
-    private level1 level;
+    private Screen previousScreen;
 
     private Click_Button Sound_button;
     private Texture Sound_before;
     private Texture Sound_after;
+
     private Click_Button music_button;
     private Texture music_before;
     private Texture music_after;
 
+    private int currLevel;
+    public void setCurrLevel(int currLevel) {
+        this.currLevel = currLevel;
+    }
 
-    private ShapeRenderer shapeRenderer;
-    private FrameBuffer frameBuffer;
-    private SpriteBatch spriteBatch;
-    private Texture previousScreenTexture;
-
-    public Pause_Screen(final launch game, level1 level) {
+    public Pause_Screen(final launch game) {
         this.game = game;
-        this.level = level;
         this.camera = game.getCamera();
         this.viewport = game.getViewport();
         this.batch = game.getBatch();
@@ -76,46 +65,50 @@ public class Pause_Screen implements Screen {
 
     private void update(float delta) {
         if (continue_button.clicked()) {
-            game.getLevel_1().resume();
-            game.setWorld(new World(new Vector2(0, -9.8f),true));
-            game.setScreen(game.getLevel_1());
+            if (currLevel == 1) {
+                game.setWorld(new World(new Vector2(0, -9.8f), true));
+                game.setScreen(game.getLevel_1());
+            } else if (currLevel == 2) {
+//                game.setWorld(new World(new Vector2(0, -9.8f),true));
+                game.setWorld(new World(new Vector2(0, -9.8f), true));
+                game.setScreen(game.getLevel_2());
+            }
+            else if (currLevel == 3) {
+                game.setWorld(new World(new Vector2(0, -9.8f),true));
+                game.setScreen(game.getLevel_3());
+            }
         }
-        if (restart_button.clicked()){
-            game.setWorld(new World(new Vector2(0, -9.8f),true));
-            game.setLevel_1(new level1(game));
-            game.setScreen(game.getLevel_1());
+        if (restart_button.clicked()) {
+            game.setWorld(new World(new Vector2(0, -9.8f), true));
+            if (currLevel == 1) {
+                game.setLevel_1(new level1(game));
+                game.setScreen(game.getLevel_1());
+            } else if (currLevel == 2) {
+                game.setLevel_2(new level2(game));
+                game.setScreen(game.getLevel_2());
+            }
+            else if (currLevel == 3) {
+                game.setLevel_3(new level3(game));
+                game.setScreen(game.getLevel_3());
+            }
         }
-        if (menu.clicked()){
-            game.setScreen(new Level_Screen(game, new MainMenuScreen(game)));
+        if (menu.clicked()) {
+            game.setScreen(game.getLevelScreen());
         }
-        if (Sound_button.isOn()){
+        if (Sound_button.isOn()) {
             game.resumeSound();
-        }else if(!Sound_button.isOn()){
+        } else if (!Sound_button.isOn()) {
             game.pauseSound();
         }
-
-        if (music_button.isOn()){
+        if (music_button.isOn()) {
             game.playMusic();
         } else if (!music_button.isOn()) {
             game.pauseMusic();
         }
     }
 
-    public void s() {
-        shapeRenderer = new ShapeRenderer();
-        spriteBatch = new SpriteBatch();
-
-        // Create a FrameBuffer with the same size as the screen
-        frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
-
-        // Create a texture to store the previous frame
-        previousScreenTexture = frameBuffer.getColorBufferTexture();
-    }
     @Override
     public void show() {
-
-
-//        this.launch_image = new Texture("pausePage.png");
         this.launch_image = assetManager.get("pausePage.png", Texture.class);
         this.no_before = assetManager.get("front.png", Texture.class);
         this.no_after = assetManager.get("frontA.png", Texture.class);
@@ -126,8 +119,10 @@ public class Pause_Screen implements Screen {
 
         this.continue_button = new Click_Button(no_before, no_after, viewport.getWorldWidth() - 150, viewport.getWorldHeight() - 150, camera);
         continue_button.setInput(inputMultiplexer);
+
         this.restart_button = new Click_Button(restartB, restartA, 150, viewport.getWorldHeight()-130, camera);
         restart_button.setInput(inputMultiplexer);
+
         this.menu = new Click_Button(menuB, menuA, 150, viewport.getWorldHeight()/2, camera);
         menu.setInput(inputMultiplexer);
 
@@ -135,56 +130,29 @@ public class Pause_Screen implements Screen {
         this.Sound_after = new Texture("5A.png");
         this.Sound_button = new Click_Button(Sound_before, Sound_after, 150, 100, camera);
         Sound_button.setInput(inputMultiplexer);
-        if (game.is_sound_ON()){
+        if (game.is_sound_ON()) {
             Sound_button.setOn();
-        }else {
+        } else {
             Sound_button.setOff();
         }
+
         this.music_before = new Texture("6B.png");
         this.music_after = new Texture("6A.png");
         this.music_button = new Click_Button(music_before, music_after, 150, 300, camera);
         music_button.setInput(inputMultiplexer);
-        if (game.getMusic().isPlaying()){
+        if (game.getMusic().isPlaying()) {
             music_button.setOn();
-        }else {
+        } else {
             music_button.setOff();
         }
+
         Gdx.input.setInputProcessor(inputMultiplexer);
-
-//        s();
-
-    }
-    public void r(float delta) {
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-
-        // Do not clear the screen, retain the previous content
-        // Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); <-- DO NOT CALL THIS
-
-        // Start drawing with ShapeRenderer
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-
-        // Draw the left half of the screen with transparent gray (Previous content)
-        shapeRenderer.setColor(0.5f, 0.5f, 0.5f, 0.5f); // Semi-transparent gray
-        shapeRenderer.rect(0, 0, Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight());
-
-        // Draw the right half of the screen with new content
-        shapeRenderer.setColor(1f, 1f, 1f, 1f); // Opaque white
-        shapeRenderer.rect(Gdx.graphics.getWidth() / 2, 0, Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight());
-
-        shapeRenderer.end();
-
     }
 
     @Override
     public void render(float delta) {
-//        ScreenUtils.clear(0, 0, 0,1);
-//        ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
-
         batch.setProjectionMatrix(camera.combined);
         camera.update();
-//    r(delta);
-
 
         Gdx.graphics.setVSync(true);
         batch.begin();
@@ -228,5 +196,13 @@ public class Pause_Screen implements Screen {
         launch_image.dispose();
         no_before.dispose();
         no_after.dispose();
+        restartB.dispose();
+        restartA.dispose();
+        menuB.dispose();
+        menuA.dispose();
+        Sound_before.dispose();
+        Sound_after.dispose();
+        music_before.dispose();
+        music_after.dispose();
     }
 }

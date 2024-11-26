@@ -11,6 +11,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -65,14 +67,21 @@ public class Level_Screen implements Screen {
             game.setScreen(game.getMainMenuScreen());
         }
         if (level1_button.clicked()) {
+            game.setWorld(new World(new Vector2(0, -9.8f),true));
+            game.setLevel_1(new level1(game));
             game.setScreen(game.getLevel_1());
         }
-//        if (level2_button.clicked()) {
-//            game.setScreen(new level2(game));
-//        }
-//        if (level3_button.clicked()) {
-//            game.setScreen(new level3(game));
-//        }
+
+        if (level2_button.clicked()) {
+            game.setWorld(new World(new Vector2(0, -9.8f),true));
+            game.setLevel_2(new level2(game));
+            game.setScreen(game.getLevel_2());
+        }
+        if (level3_button.clicked()) {
+            game.setWorld(new World(new Vector2(0, -9.8f),true));
+            game.setLevel_3(new level3(game));
+            game.setScreen(new level3(game));
+        }
     }
 
     @Override
@@ -105,6 +114,103 @@ public class Level_Screen implements Screen {
 
     }
 
+    public void drawStar(){
+        float l1 = game.getLevel1_score(game.getLoginScreen().getUserid());
+        float l2 = game.getLevel2_score(game.getLoginScreen().getUserid());
+        float l3 = game.getLevel3_score(game.getLoginScreen().getUserid());
+
+        if (l1 >= 4000){
+
+            font.draw(batch, "1", 370, viewport.getWorldHeight() -115);
+            level1_button.draw(batch);
+            batch.draw(star_1, 300, viewport.getWorldHeight() -320, 70 ,58);
+            batch.draw(star_2, 365, viewport.getWorldHeight() -320, 70 ,58);
+            batch.draw(star_3, 430, viewport.getWorldHeight() -320, 70 ,58);
+
+        } else if (l1 < 4000 && l1> 3000 ) {
+
+            font.draw(batch, "1", 370, viewport.getWorldHeight() -115);
+            level1_button.draw(batch);
+            batch.draw(star_1, 300, viewport.getWorldHeight() -320, 70 ,58);
+            batch.draw(star_2, 365, viewport.getWorldHeight() -320, 70 ,58);
+
+        } else if (3000 >= l1 && l1 > 0) {
+
+            font.draw(batch, "1", 370, viewport.getWorldHeight() -115);
+            level1_button.draw(batch);
+            batch.draw(star_1, 300, viewport.getWorldHeight() -320, 70 ,58);
+
+        } else if (l1 == 0) {
+
+            font.draw(batch, "1", 370, viewport.getWorldHeight() -115);
+            level1_button.draw(batch);
+
+        }
+
+        if (l2 >= 4000){
+
+            font.draw(batch, "2", 670, viewport.getWorldHeight() -115);
+            level2_button.draw(batch);
+            batch.draw(star_1, 600, viewport.getWorldHeight() -320, 70 ,58);
+            batch.draw(star_2, 665, viewport.getWorldHeight() -320, 70 ,58);
+            batch.draw(star_3, 730, viewport.getWorldHeight() -320, 70 ,58);
+
+        } else if (l2 < 4000 && l2 > 3000 ) {
+
+            font.draw(batch, "2", 670, viewport.getWorldHeight() -115);
+            level2_button.draw(batch);
+            batch.draw(star_1, 600, viewport.getWorldHeight() -320, 70 ,58);
+            batch.draw(star_2, 665, viewport.getWorldHeight() -320, 70 ,58);
+
+        } else if (3000 >= l2 && l2 > 1) {
+
+            font.draw(batch, "2", 670, viewport.getWorldHeight() -115);
+            level2_button.draw(batch);
+            batch.draw(star_1, 600, viewport.getWorldHeight() -320, 70 ,58);
+
+        } else if (l2 == 0) {
+
+            batch.draw(level_F, 600,3*viewport.getWorldHeight()/4 -30 , 200, 200);
+            batch.draw(lock, 645, 3*viewport.getWorldHeight() /4 , 101, 130 );
+        } else if (l2 == 1) {
+            font.draw(batch, "2", 670, viewport.getWorldHeight() -115);
+            level2_button.draw(batch);
+        }
+
+
+        if (l3 >= 4000){
+
+            font.draw(batch, "3", 970, viewport.getWorldHeight() -115);
+            level3_button.draw(batch);
+            batch.draw(star_1, 900, viewport.getWorldHeight() -320, 70 ,58);
+            batch.draw(star_2, 965, viewport.getWorldHeight() -320, 70 ,58);
+            batch.draw(star_3, 1030, viewport.getWorldHeight() -320, 70 ,58);
+
+        } else if (l3 < 4000 && l3 > 3000 ) {
+
+            font.draw(batch, "3", 970, viewport.getWorldHeight() -115);
+            level3_button.draw(batch);
+            batch.draw(star_1, 900, viewport.getWorldHeight() -320, 70 ,58);
+            batch.draw(star_2, 965, viewport.getWorldHeight() -320, 70 ,58);
+
+        } else if (3000 >= l3 && l3 > 1) {
+
+            font.draw(batch, "3", 970, viewport.getWorldHeight() -115);
+            level3_button.draw(batch);
+            batch.draw(star_1, 900, viewport.getWorldHeight() -320, 70 ,58);
+
+        } else if (l3 == 0) {
+
+            batch.draw(level_F, 900,3*viewport.getWorldHeight()/4 -30 , 200, 200);
+            batch.draw(lock, 945, 3*viewport.getWorldHeight() /4 , 101, 130 );
+        } else if (l3 == 1) {
+            font.draw(batch, "3", 970, viewport.getWorldHeight() -115);
+            level3_button.draw(batch);
+        }
+
+
+    }
+
     @Override
     public void render(float v) {
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
@@ -117,22 +223,31 @@ public class Level_Screen implements Screen {
 
         font.getData().setScale(1.4f);
         font.setColor(Color.WHITE);
-        level1_button.draw(batch);
-        font.draw(batch, "1", 370, viewport.getWorldHeight() -115);
-        batch.draw(star_1, 300, viewport.getWorldHeight() -320, 70 ,58);
-        batch.draw(star_2, 365, viewport.getWorldHeight() -320, 70 ,58);
-        batch.draw(star_3, 430, viewport.getWorldHeight() -320, 70 ,58);
-        level2_button.draw(batch);
-        font.draw(batch, "2", 670, viewport.getWorldHeight() -115);
-        batch.draw(star_1, 300, viewport.getWorldHeight() -320, 70 ,58);
-        batch.draw(star_2, 365, viewport.getWorldHeight() -320, 70 ,58);
-        batch.draw(star_3, 430, viewport.getWorldHeight() -320, 70 ,58);
 
-        level3_button.draw(batch);
-        font.draw(batch, "3", 970, viewport.getWorldHeight() -115);
-        batch.draw(star_1, 300, viewport.getWorldHeight() -320, 70 ,58);
-        batch.draw(star_2, 365, viewport.getWorldHeight() -320, 70 ,58);
-        batch.draw(star_3, 430, viewport.getWorldHeight() -320, 70 ,58);
+        drawStar();
+//        level1_button.draw(batch);
+//        font.draw(batch, "1", 370, viewport.getWorldHeight() -115);
+//        batch.draw(star_1, 300, viewport.getWorldHeight() -320, 70 ,58);
+//        batch.draw(star_2, 365, viewport.getWorldHeight() -320, 70 ,58);
+//        batch.draw(star_3, 430, viewport.getWorldHeight() -320, 70 ,58);
+//        level2_button.draw(batch);
+//        font.draw(batch, "2", 670, viewport.getWorldHeight() -115);
+//        batch.draw(star_1, 600, viewport.getWorldHeight() -320, 70 ,58);
+//        batch.draw(star_2, 665, viewport.getWorldHeight() -320, 70 ,58);
+//        batch.draw(star_3, 730, viewport.getWorldHeight() -320, 70 ,58);
+//
+//        level3_button.draw(batch);
+//        font.draw(batch, "3", 970, viewport.getWorldHeight() -115);
+//        batch.draw(star_1, 900, viewport.getWorldHeight() -320, 70 ,58);
+//        batch.draw(star_2, 965, viewport.getWorldHeight() -320, 70 ,58);
+//        batch.draw(star_3, 1030, viewport.getWorldHeight() -320, 70 ,58);
+
+//        level2_button.draw(batch);
+
+
+//        level3_button.draw(batch);
+
+
 
         batch.draw(level_F, 1200,3*viewport.getWorldHeight()/4 -30 , 200, 200);
         batch.draw(lock, 1245, 3*viewport.getWorldHeight() /4 , 101, 130 );
