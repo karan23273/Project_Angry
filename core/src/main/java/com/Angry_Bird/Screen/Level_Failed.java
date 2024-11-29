@@ -84,6 +84,7 @@ public class Level_Failed implements Screen {
     public void show() {
 //        this.launch_image = new Texture("pausePage.png");
         this.launch_image = assetManager.get("Level failed2.png", Texture.class);
+//        this.launch_image = new Texture("Level faild (1).png");
         this.restartB = assetManager.get("restartB.png", Texture.class);
         this.restartA = assetManager.get("restartA.png", Texture.class);
         this.menuB = assetManager.get("level menuB.png", Texture.class);
@@ -111,10 +112,12 @@ public class Level_Failed implements Screen {
 //        game.getShapeRenderer().rect(0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
 //        game.getShapeRenderer().end();
 //        Gdx.gl.glDisable(GL20.GL_BLEND);
-
+//        batch.setColor(1, 1, 1, 0.2f);
+//        Gdx.graphics.setContinuousRendering(false);
         batch.begin();
 //        batch.draw(new Texture("Level failed Bg.png"), 600, 0, 750, viewport.getWorldHeight());
 //        batch.draw(launch_image, 0, viewport.getWorldHeight()/2, viewport.getWorldWidth(), viewport.getWorldHeight()-82);
+//        batch.setColor(1, 1, 1, 1f);
         batch.draw(launch_image,  600, 0, 750, viewport.getWorldHeight());
         restart_button.draw(batch);
         menu.draw(batch);

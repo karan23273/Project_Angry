@@ -63,12 +63,15 @@ public class Bird_Yellow implements Birds{
         destroyed = true;
         world.destroyBody(body);
     }
-
+    private Vector2 velocity;
+    float angle;
     @Override
     public void draw_object(SpriteBatch batch) {
         if (destroyed) return;
 
         Vector2 pos = body.getPosition();
+        velocity = body.getLinearVelocity();
+        angle = body.getAngle();
 //        set_bird(pos.x, pos.y);
         yellow_sprite.setRotation((float) Math.toDegrees(body.getAngle()));
         yellow_sprite.setOrigin(yellow_sprite.getWidth() / 2, yellow_sprite.getHeight() / 2-5/PPM);
@@ -89,5 +92,17 @@ public class Bird_Yellow implements Birds{
     }
     public void launch(Vector2 force) {
         body.applyLinearImpulse(force.scl(1.5f), body.getWorldCenter(), true);
+    }
+
+    public void setState(){
+        velocity = body.getLinearVelocity();
+        angle = body.getAngle();
+
+        body.setType(BodyDef.BodyType.StaticBody);
+    }
+    public void getState() {
+        body.setType(BodyDef.BodyType.DynamicBody);
+        body.setLinearVelocity(velocity);
+//        body.setAngularVelocity(angle);
     }
 }

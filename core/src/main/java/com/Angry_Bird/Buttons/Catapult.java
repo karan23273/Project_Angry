@@ -16,10 +16,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Queue;
 
-public class Catapult {
+public class Catapult implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final launch game;
     private final World world;
     private final SpriteBatch batch;
@@ -48,6 +50,14 @@ public class Catapult {
     private ArrayList<Body> birds;
     private int total_birds;
     private int index = 0;
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+    public int getIndex() {
+        return index;
+    }
+
     boolean birdzero = false;
     public boolean birdsLeft(){
         return birdzero;
@@ -76,6 +86,7 @@ public class Catapult {
 //        bird = new Bird_Red(game, initialPos.x, initialPos.y);
         body = null;
         if (index<total_birds) {
+
             body = birds.get(index);
             body.setTransform(initialPos.x, initialPos.y, body.getAngle() );
             body.setType(BodyDef.BodyType.StaticBody);
@@ -158,7 +169,6 @@ public class Catapult {
         }
 
     }
-
 
 
     public void renderCatapult() {

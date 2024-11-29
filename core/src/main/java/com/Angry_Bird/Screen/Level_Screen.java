@@ -72,12 +72,12 @@ public class Level_Screen implements Screen {
             game.setScreen(game.getLevel_1());
         }
 
-        if (level2_button.clicked()) {
+        if (game.getLevel2_score(game.getLoginScreen().getUserid()) >=1 && level2_button.clicked()) {
             game.setWorld(new World(new Vector2(0, -9.8f),true));
             game.setLevel_2(new level2(game));
             game.setScreen(game.getLevel_2());
         }
-        if (level3_button.clicked()) {
+        if (game.getLevel3_score(game.getLoginScreen().getUserid()) >=1 && level3_button.clicked()) {
             game.setWorld(new World(new Vector2(0, -9.8f),true));
             game.setLevel_3(new level3(game));
             game.setScreen(new level3(game));
@@ -134,7 +134,7 @@ public class Level_Screen implements Screen {
             batch.draw(star_1, 300, viewport.getWorldHeight() -320, 70 ,58);
             batch.draw(star_2, 365, viewport.getWorldHeight() -320, 70 ,58);
 
-        } else if (3000 >= l1 && l1 > 0) {
+        } else if (3000 >= l1 && l1 > 1) {
 
             font.draw(batch, "1", 370, viewport.getWorldHeight() -115);
             level1_button.draw(batch);
@@ -162,7 +162,7 @@ public class Level_Screen implements Screen {
             batch.draw(star_1, 600, viewport.getWorldHeight() -320, 70 ,58);
             batch.draw(star_2, 665, viewport.getWorldHeight() -320, 70 ,58);
 
-        } else if (3000 >= l2 && l2 > 1) {
+        } else if (3000 >= l2 && l2 >= 1000) {
 
             font.draw(batch, "2", 670, viewport.getWorldHeight() -115);
             level2_button.draw(batch);
@@ -172,7 +172,7 @@ public class Level_Screen implements Screen {
 
             batch.draw(level_F, 600,3*viewport.getWorldHeight()/4 -30 , 200, 200);
             batch.draw(lock, 645, 3*viewport.getWorldHeight() /4 , 101, 130 );
-        } else if (l2 == 1) {
+        } else if (l2 >= 1 && 1000 > l2) {
             font.draw(batch, "2", 670, viewport.getWorldHeight() -115);
             level2_button.draw(batch);
         }
@@ -193,7 +193,7 @@ public class Level_Screen implements Screen {
             batch.draw(star_1, 900, viewport.getWorldHeight() -320, 70 ,58);
             batch.draw(star_2, 965, viewport.getWorldHeight() -320, 70 ,58);
 
-        } else if (3000 >= l3 && l3 > 1) {
+        } else if (3000 >= l3 && l3 >= 1000) {
 
             font.draw(batch, "3", 970, viewport.getWorldHeight() -115);
             level3_button.draw(batch);
@@ -203,11 +203,10 @@ public class Level_Screen implements Screen {
 
             batch.draw(level_F, 900,3*viewport.getWorldHeight()/4 -30 , 200, 200);
             batch.draw(lock, 945, 3*viewport.getWorldHeight() /4 , 101, 130 );
-        } else if (l3 == 1) {
+        } else if (l3 >= 1 && 1000 > l3) {
             font.draw(batch, "3", 970, viewport.getWorldHeight() -115);
             level3_button.draw(batch);
         }
-
 
     }
 

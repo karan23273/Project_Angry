@@ -71,11 +71,15 @@ public class Bird_Black implements Birds{
         destroyed = true;
         world.destroyBody(body);
     }
+    private Vector2 velocity;
+    float angle;
     @Override
     public void draw_object(SpriteBatch batch) {
         if (destroyed) return;
 
         Vector2 pos = body.getPosition();
+        velocity = body.getLinearVelocity();
+        angle = body.getAngle();
 //        set_bird(pos.x, pos.y);
         black_sprite.setRotation((float) Math.toDegrees(body.getAngle()));
         black_sprite.setOrigin(black_sprite.getWidth() / 2, black_sprite.getWidth() / 2);
@@ -90,6 +94,18 @@ public class Bird_Black implements Birds{
     }
     public boolean isDestroyed() {
         return destroyed;
+    }
+
+    public void setState(){
+        velocity = body.getLinearVelocity();
+        angle = body.getAngle();
+
+        body.setType(BodyDef.BodyType.StaticBody);
+    }
+    public void getState() {
+        body.setType(BodyDef.BodyType.DynamicBody);
+        body.setLinearVelocity(velocity);
+//        body.setAngularVelocity(angle);
     }
 
 }

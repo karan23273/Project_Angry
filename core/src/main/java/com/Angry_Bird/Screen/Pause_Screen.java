@@ -2,7 +2,6 @@ package com.Angry_Bird.Screen;
 
 import com.Angry_Bird.Buttons.Click_Button;
 import com.Angry_Bird.launch;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
@@ -36,7 +35,6 @@ public class Pause_Screen implements Screen {
 
     private InputMultiplexer inputMultiplexer;
 
-    private Screen previousScreen;
 
     private Click_Button Sound_button;
     private Texture Sound_before;
@@ -51,6 +49,7 @@ public class Pause_Screen implements Screen {
         this.currLevel = currLevel;
     }
 
+    private float PPM;
     public Pause_Screen(final launch game) {
         this.game = game;
         this.camera = game.getCamera();
@@ -59,52 +58,65 @@ public class Pause_Screen implements Screen {
         this.font = game.getFont();
         this.assetManager = game.getAssetManager();
         this.inputMultiplexer = new InputMultiplexer();
-
-        Gdx.input.setInputProcessor(inputMultiplexer);
+        this.PPM = game.getPPM();
+//        Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
     private void update(float delta) {
-        if (continue_button.clicked()) {
-            if (currLevel == 1) {
+        if (game.getLevel_1().isPaused() || game.getLevel_2().isPaused() || game.getLevel_3().isPaused()) {
+
+            if (continue_button.clicked()) {
+
+                if (currLevel == 1) {
+                    game.getLevel_1().setPaused(false);
+                    continue_button.setOff();
+                    game.getLevel_1().pause_Button.setOff();
+
+                } else if (currLevel == 2) {
+
+                    game.getLevel_2().setPaused(false);
+                    continue_button.setOff();
+                    game.getLevel_2().pause_Button.setOff();
+
+                } else if (currLevel == 3) {
+                    game.getLevel_3().setPaused(false);
+                    continue_button.setOff();
+                    game.getLevel_3().getPauseButton().setOff();
+                }
+            }
+            if (restart_button.clicked()) {
+
                 game.setWorld(new World(new Vector2(0, -9.8f), true));
-                game.setScreen(game.getLevel_1());
-            } else if (currLevel == 2) {
-//                game.setWorld(new World(new Vector2(0, -9.8f),true));
-                game.setWorld(new World(new Vector2(0, -9.8f), true));
-                game.setScreen(game.getLevel_2());
+                if (currLevel == 1) {
+                    game.setLevel_1(new level1(game));
+                    game.setScreen(game.getLevel_1());
+                } else if (currLevel == 2) {
+                    game.setLevel_2(new level2(game));
+                    game.setScreen(game.getLevel_2());
+                } else if (currLevel == 3) {
+                    game.setLevel_3(new level3(game));
+                    game.setScreen(game.getLevel_3());
+                }
             }
-            else if (currLevel == 3) {
-                game.setWorld(new World(new Vector2(0, -9.8f),true));
-                game.setScreen(game.getLevel_3());
+            if (menu.clicked()) {
+
+                game.setScreen(game.getLevelScreen());
+            }
+            if (Sound_button.isOn()) {
+                game.resumeSound();
+            } else if (!Sound_button.isOn()) {
+                game.pauseSound();
+            }
+            if (music_button.isOn()) {
+                game.playMusic();
+            } else if (!music_button.isOn()) {
+                game.pauseMusic();
             }
         }
-        if (restart_button.clicked()) {
-            game.setWorld(new World(new Vector2(0, -9.8f), true));
-            if (currLevel == 1) {
-                game.setLevel_1(new level1(game));
-                game.setScreen(game.getLevel_1());
-            } else if (currLevel == 2) {
-                game.setLevel_2(new level2(game));
-                game.setScreen(game.getLevel_2());
-            }
-            else if (currLevel == 3) {
-                game.setLevel_3(new level3(game));
-                game.setScreen(game.getLevel_3());
-            }
-        }
-        if (menu.clicked()) {
-            game.setScreen(game.getLevelScreen());
-        }
-        if (Sound_button.isOn()) {
-            game.resumeSound();
-        } else if (!Sound_button.isOn()) {
-            game.pauseSound();
-        }
-        if (music_button.isOn()) {
-            game.playMusic();
-        } else if (!music_button.isOn()) {
-            game.pauseMusic();
-        }
+    }
+
+    public void setInputMultiplexer(InputMultiplexer inputMultiplexer) {
+        this.inputMultiplexer = inputMultiplexer;
     }
 
     @Override
@@ -117,18 +129,18 @@ public class Pause_Screen implements Screen {
         this.menuB = assetManager.get("level menuB.png", Texture.class);
         this.menuA = assetManager.get("level menuA.png", Texture.class);
 
-        this.continue_button = new Click_Button(no_before, no_after, viewport.getWorldWidth() - 150, viewport.getWorldHeight() - 150, camera);
+        this.continue_button = new Click_Button(no_before, no_after, (340)/PPM, (viewport.getWorldHeight() - 160)/PPM, camera, 150/PPM, 150/PPM);
         continue_button.setInput(inputMultiplexer);
 
-        this.restart_button = new Click_Button(restartB, restartA, 150, viewport.getWorldHeight()-130, camera);
+        this.restart_button = new Click_Button(restartB, restartA, (150)/PPM, (viewport.getWorldHeight()-250)/PPM, camera, 150/PPM, 150/PPM);
         restart_button.setInput(inputMultiplexer);
 
-        this.menu = new Click_Button(menuB, menuA, 150, viewport.getWorldHeight()/2, camera);
+        this.menu = new Click_Button(menuB, menuA, 150/PPM, (viewport.getWorldHeight()/2 +40)/PPM, camera, 150/PPM, 150/PPM);
         menu.setInput(inputMultiplexer);
 
         this.Sound_before = new Texture("5B.png");
         this.Sound_after = new Texture("5A.png");
-        this.Sound_button = new Click_Button(Sound_before, Sound_after, 150, 100, camera);
+        this.Sound_button = new Click_Button(Sound_before, Sound_after, 150/PPM, 60/PPM, camera, 150/PPM, 150/PPM);
         Sound_button.setInput(inputMultiplexer);
         if (game.is_sound_ON()) {
             Sound_button.setOn();
@@ -138,7 +150,7 @@ public class Pause_Screen implements Screen {
 
         this.music_before = new Texture("6B.png");
         this.music_after = new Texture("6A.png");
-        this.music_button = new Click_Button(music_before, music_after, 150, 300, camera);
+        this.music_button = new Click_Button(music_before, music_after, 150/PPM, 300/PPM, camera, 150/PPM, 150/PPM);
         music_button.setInput(inputMultiplexer);
         if (game.getMusic().isPlaying()) {
             music_button.setOn();
@@ -146,40 +158,43 @@ public class Pause_Screen implements Screen {
             music_button.setOff();
         }
 
-        Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
     @Override
     public void render(float delta) {
-        batch.setProjectionMatrix(camera.combined);
-        camera.update();
-
-        Gdx.graphics.setVSync(true);
-        batch.begin();
-        batch.draw(launch_image, 0, 0, 400, viewport.getWorldHeight());
-        continue_button.draw(batch);
-        restart_button.draw(batch);
-        menu.draw(batch);
-        if (Sound_button.isOn()) Sound_button.toggleDrawON(batch);
-        else Sound_button.toggleDrawOFF(batch);
-
-        if (music_button.isOn()) music_button.toggleDrawON(batch);
-        else music_button.toggleDrawOFF(batch);
-        batch.end();
 
         update(delta);
+        System.out.println(game.getLevel_1().isPaused() +" "+ game.getLevel_2().isPaused() +" "+ game.getLevel_3().isPaused());
+        if (game.getLevel_1().isPaused() || game.getLevel_2().isPaused() || game.getLevel_3().isPaused()) {
+
+            batch.begin();
+            batch.setColor(0.5f, 0.5f, 0.5f, 0.5f);
+//        batch.setColor(1,1,1,1);
+            batch.draw(launch_image, 0, 0, 400 / PPM, viewport.getWorldHeight() / PPM);
+            batch.setColor(1, 1, 1, 1);
+            continue_button.draw(batch);
+            restart_button.draw(batch);
+            menu.draw(batch);
+            if (Sound_button.isOn()) Sound_button.toggleDrawON(batch);
+            else Sound_button.toggleDrawOFF(batch);
+
+            if (music_button.isOn()) music_button.toggleDrawON(batch);
+            else music_button.toggleDrawOFF(batch);
+            batch.end();
+        }
+
     }
 
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height);
-        camera.position.set(viewport.getWorldWidth() / 2, viewport.getWorldHeight() / 2, 0);
+        camera.position.set(viewport.getWorldWidth() / 2 , viewport.getWorldHeight() / 2, 0);
         camera.update();
-        continue_button.set_Position(350, viewport.getWorldHeight() - 150);
-        restart_button.set_Position(150, viewport.getWorldHeight()-300);
-        menu.set_Position(150, viewport.getWorldHeight()/2);
-        Sound_button.set_Position(150, 100);
-        music_button.set_Position(150, 300);
+        continue_button.set_Position(350/PPM, (viewport.getWorldHeight() - 150)/PPM);
+        restart_button.set_Position(150/PPM, (viewport.getWorldHeight()-300)/PPM);
+        menu.set_Position(150/PPM, (viewport.getWorldHeight()/2)/PPM);
+        Sound_button.set_Position(150/PPM, 100/PPM);
+        music_button.set_Position(150/PPM, 300/PPM);
     }
 
     @Override

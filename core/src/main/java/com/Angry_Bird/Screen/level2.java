@@ -4,6 +4,7 @@ import com.Angry_Bird.Birds.Bird_Red;
 import com.Angry_Bird.Birds.Bird_Yellow;
 import com.Angry_Bird.Blocks.Block_Frame;
 import com.Angry_Bird.Blocks.Block_Rectangle;
+import com.Angry_Bird.BodyData;
 import com.Angry_Bird.Buttons.Catapult;
 import com.Angry_Bird.Buttons.Click_Button;
 import com.Angry_Bird.Pig.Adult_pig;
@@ -26,6 +27,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
 
 public class level2 implements Screen{
@@ -42,7 +44,7 @@ public class level2 implements Screen{
     private Texture cata;
     private BitmapFont font;
 
-    private Click_Button pause_Button;
+    Click_Button pause_Button;
     private Texture pause_before;
     private Texture pause_after;
 
@@ -74,7 +76,7 @@ public class level2 implements Screen{
 
     private Texture adult_pig;
 
-   ;
+    ;
     private Adult_pig adult_pig1;
 
 
@@ -148,8 +150,17 @@ public class level2 implements Screen{
     private ArrayList<Body> destroyBody;
     private int kills;
     private float wait = 0;
-    private boolean isPaused = false;
+//    private boolean isPaused = false;
     private float start_time = 0;
+
+    private boolean pause = false;
+    public boolean isPaused() {
+        return pause;
+    }
+    public void setPaused(boolean f) { pause = f; }
+
+    private Click_Button savebutton;
+    private Click_Button loadbutton;
 
     public level2(final launch game) {
         this.PPM = game.getPPM();
@@ -175,23 +186,29 @@ public class level2 implements Screen{
         Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
-
+    public Click_Button getPauseButton() {return pause_Button;}
 
     private void update(float delta) {
 
-        if (pause_Button.clicked()) {
-//            red1.destroy();
-//            wait += delta;
-//            if (wait >0.5f){
-//                isPaused = true;
-//                pause
-            game.getPauseScreen().setCurrLevel(2);
-            game.setScreen(game.getPauseScreen());
-
-//                wait = 0;
-//            }
+        if (savebutton.clicked()){
+            Savegame();
         }
-        if (restart_button.clicked()){
+        if (loadbutton.clicked()){
+            Loadgame();
+            loadbutton.setOff();
+        }
+        if (pause_Button.isOn()) {
+
+            pause = true;
+            game.getLevel_1().setPaused(false);
+            game.getLevel_3().setPaused(false);
+            game.getPauseScreen().setCurrLevel(2);
+            game.getPauseScreen().render(delta);
+
+
+        }
+
+        if (!pause && restart_button.clicked()){
             game.setWorld(new World(new Vector2(0, -9.8f),true));
             game.setLevel_2(new level2(game));
             game.setScreen(game.getLevel_2());
@@ -213,16 +230,11 @@ public class level2 implements Screen{
         else if(kills>0 && catapult_drag.birdsLeft()){
             game.getLevelFailed().setCurrLevel(2);
             game.setScreen(game.getLevelFailed());
-//            System.out.printf("Fial");
+
         }
+
     }
 
-    public Integer getScore(){
-        return score;
-    }
-    public void setScore(Integer score){
-        this.score = score;
-    }
 
     @Override
     public void show() {
@@ -244,49 +256,55 @@ public class level2 implements Screen{
 
         this.restart_button = new Click_Button(restartB, restartA, 200/PPM, (viewport.getWorldHeight()-170)/PPM, camera, 180/PPM, 180/PPM);
         restart_button.setInput(inputMultiplexer);
+        this.savebutton = new Click_Button(new Texture("saveGame.png"),new Texture("saveGameA.png"),1250/PPM, (viewport.getWorldHeight()-100)/PPM, camera, 300/PPM, 100/PPM );
+        savebutton.setInput(inputMultiplexer);
+
+        this.loadbutton = new Click_Button(new Texture("loadGame.png"), new Texture("loadGameA.png"),900/PPM, (viewport.getWorldHeight()-100)/PPM, camera, 300/PPM, 100/PPM  );
+        loadbutton.setInput(inputMultiplexer);
 
 //        birds.add(new Bird_Red(game, 300/PPM, (floorWidth+190)/PPM).getBody());
-        this.birdRed1 = new Bird_Red(game, 360/PPM, (floorWidth+25)/PPM);
-        birds.add(birdRed1.getBody());
-        this.birdRed2 = new Bird_Red(game, 300/PPM, (floorWidth+25)/PPM);
-        birds.add(birdRed2.getBody());
-        this.birdYellow1 = new Bird_Yellow(game, 260/PPM, (floorWidth+25)/PPM);
-        birds.add(birdYellow1.getBody());
-        this.birdYellow2=new Bird_Yellow(game,180/PPM,(floorWidth+25)/PPM);
-        birds.add(birdYellow2.getBody());
-        this.birdBlack1 = new Bird_Black(game, 120/PPM, (floorWidth+25)/PPM);
-        birds.add(birdBlack1.getBody());
+        if(!pause){
+            this.birdRed1 = new Bird_Red(game, 360/PPM, (floorWidth+25)/PPM);
+            birds.add(birdRed1.getBody());
+            this.birdRed2 = new Bird_Red(game, 300/PPM, (floorWidth+25)/PPM);
+            birds.add(birdRed2.getBody());
+            this.birdYellow1 = new Bird_Yellow(game, 260/PPM, (floorWidth+25)/PPM);
+            birds.add(birdYellow1.getBody());
+            this.birdYellow2=new Bird_Yellow(game,180/PPM,(floorWidth+25)/PPM);
+            birds.add(birdYellow2.getBody());
+            this.birdBlack1 = new Bird_Black(game, 120/PPM, (floorWidth+25)/PPM);
+            birds.add(birdBlack1.getBody());
 
 
-        // pig
+            // pig
 //        this.baby_pig1 = new Baby_pig(game, Bp1_x, Bp1_y);
 //        this.baby_pig2 = new Baby_pig(game, Bp2_x, Bp2_y);
-        this.adult_pig1 = new Adult_pig(game, Ap1_x, Ap1_y);
-        this.adult_pig2 = new Adult_pig(game, Ap2_x, Ap2_y);
-//        this.adult_pig3 = new Adult_pig(game, Ap3_x, Ap3_y);
-        this.kingpin = new King_pig(game, Kp1_x, Kp1_y);
-        this.baby_pig1 = new Baby_pig(game, Bp1_x, Bp1_y);
-//        this.baby_pig2 = new Baby_pig(game, Bp2_x, Bp2_y);
-//        this.adult_pig1 = new Adult_pig(game, Ap1_x, Ap1_y);
-//        this.adult_pig2 = new Adult_pig(game, Ap2_x, Ap2_y);
-//        this.baby_pig3 = new Baby_pig(game, Kp1_x, Kp1_y - 200);
-//        this.adult_pig3 = new Adult_pig(game, Ap3_x, Ap3_y);
-//        this.kingpin = new King_pig(game, Kp1_x, Kp1_y);
+            this.adult_pig1 = new Adult_pig(game, Ap1_x, Ap1_y);
+            this.adult_pig2 = new Adult_pig(game, Ap2_x, Ap2_y);
+            //        this.adult_pig3 = new Adult_pig(game, Ap3_x, Ap3_y);
+            this.kingpin = new King_pig(game, Kp1_x, Kp1_y);
+            this.baby_pig1 = new Baby_pig(game, Bp1_x, Bp1_y);
+            //        this.baby_pig2 = new Baby_pig(game, Bp2_x, Bp2_y);
+            //        this.adult_pig1 = new Adult_pig(game, Ap1_x, Ap1_y);
+            //        this.adult_pig2 = new Adult_pig(game, Ap2_x, Ap2_y);
+            //        this.baby_pig3 = new Baby_pig(game, Kp1_x, Kp1_y - 200);
+            //        this.adult_pig3 = new Adult_pig(game, Ap3_x, Ap3_y);
+            //        this.kingpin = new King_pig(game, Kp1_x, Kp1_y);
 
-        // Base level - wide foundation
-        this.blockRectangle1 = new Block_Rectangle(game, "rock", 1200, floorWidth, 80, 120); // Wider and taller base
-        this.blockRectangle2 = new Block_Rectangle(game, "rock", 1600, floorWidth, 80, 120); // Wider and taller base
+            // Base level - wide foundation
+            this.blockRectangle1 = new Block_Rectangle(game, "rock", 1200, floorWidth, 80, 120); // Wider and taller base
+            this.blockRectangle2 = new Block_Rectangle(game, "rock", 1600, floorWidth, 80, 120); // Wider and taller base
 
-        this.blockRectangle3 = new Block_Rectangle(game, "rock", 1230, floorWidth + 120, 50, 120); // Centered on blockRectangle1
-        this.blockRectangle4 = new Block_Rectangle(game, "rock", 1550, floorWidth + 120, 50, 120); // Centered on blockRectangle2
+            this.blockRectangle3 = new Block_Rectangle(game, "rock", 1230, floorWidth + 120, 50, 120); // Centered on blockRectangle1
+            this.blockRectangle4 = new Block_Rectangle(game, "rock", 1550, floorWidth + 120, 50, 120); // Centered on blockRectangle2
 
 
-//         First level platforms - thick and stable
-        this.blockRectangle5 = new Block_Rectangle(game, "rock", 1200, floorWidth + 200, 200, 30); // Slightly reduced width
-        this.blockRectangle6 = new Block_Rectangle(game, "rock", 1460, floorWidth + 200 +5, 300, 30); // Slightly reduced width
+            //         First level platforms - thick and stable
+            this.blockRectangle5 = new Block_Rectangle(game, "rock", 1200, floorWidth + 200, 200, 30); // Slightly reduced width
+            this.blockRectangle6 = new Block_Rectangle(game, "rock", 1460, floorWidth + 200 +5, 300, 30); // Slightly reduced width
 //
 //        // Vertical supports - thicker for stability
-        this.blockRectangle7 = new Block_Rectangle(game, "rock", 1700, floorWidth, 80, 120);
+            this.blockRectangle7 = new Block_Rectangle(game, "rock", 1700, floorWidth, 80, 120);
 //        this.blockRectangle8 = new Block_Rectangle(game, "rock", 1500, floorWidth + 130, 40, 120);
 //
 //        // Middle platform - single wide platform for better stability
@@ -308,16 +326,19 @@ public class level2 implements Screen{
 //        this.blockRectangle18 = new Block_Rectangle(game, "rock", 1400, floorWidth + 180, 40, 80);  // Middle support
 //        this.blockRectangle19 = new Block_Rectangle(game, "rock", 1400, floorWidth + 320, 40, 40);  // Top support
 
-//        this.blockFrame1 = new Block_Frame(game,"Square", "wood",1055 , (floorWidth + 99 + 20 + 200 + 25) , 60);
-//        this.blockFrame2 = new Block_Frame(game,"Triangle", "rock",1455 , (floorWidth + 99 + 20 + 200 + 25), 60);
 
-        Gdx.input.setInputProcessor(inputMultiplexer);
-        drawfloor();
-        drawcatapult(350, 20);
-        drawcatapult(1950, 100);
-        this.catapult_drag = new Catapult(game,birds,335/PPM, (floorWidth+190)/PPM);
-//
+            drawfloor();
+            drawcatapult(350, 20);
+            drawcatapult(1950, 100);
+            this.catapult_drag = new Catapult(game,birds,335/PPM, (floorWidth+190)/PPM);
+            game.getPauseScreen().setInputMultiplexer(inputMultiplexer);
+            game.getPauseScreen().show();
+        }
+        else {
 
+            Gdx.input.setInputProcessor(inputMultiplexer);
+
+        }
     }
     public void drawfloor(){
         floor_body.type = BodyDef.BodyType.StaticBody;
@@ -334,6 +355,69 @@ public class level2 implements Screen{
 
     }
 
+
+    public void Savegame(){
+        List<BodyData> blocks = new ArrayList<>();
+        int cp = catapult_drag.getIndex();
+        List<BodyData> Ap = new ArrayList<>();
+        List<BodyData> Bp = new ArrayList<>();
+        List<BodyData> kp = new ArrayList<>();
+        blocks.add(new BodyData(blockRectangle1.getBody().getPosition().x, blockRectangle1.getBody().getPosition().y, blockRectangle1.getBody().getLinearVelocity().x, blockRectangle1.getBody().getLinearVelocity().y, blockRectangle1.getBody().getAngle(), blockRectangle1.getBody().getAngularVelocity(), blockRectangle1.isDestroyed()));
+        blocks.add(new BodyData(blockRectangle2.getBody().getPosition().x, blockRectangle2.getBody().getPosition().y, blockRectangle2.getBody().getLinearVelocity().x, blockRectangle2.getBody().getLinearVelocity().y, blockRectangle2.getBody().getAngle(), blockRectangle2.getBody().getAngularVelocity(), blockRectangle2.isDestroyed()));
+        blocks.add(new BodyData(blockRectangle3.getBody().getPosition().x, blockRectangle3.getBody().getPosition().y, blockRectangle3.getBody().getLinearVelocity().x, blockRectangle3.getBody().getLinearVelocity().y, blockRectangle3.getBody().getAngle(), blockRectangle3.getBody().getAngularVelocity(), blockRectangle3.isDestroyed()));
+        blocks.add(new BodyData(blockRectangle4.getBody().getPosition().x, blockRectangle4.getBody().getPosition().y, blockRectangle4.getBody().getLinearVelocity().x, blockRectangle4.getBody().getLinearVelocity().y, blockRectangle4.getBody().getAngle(), blockRectangle4.getBody().getAngularVelocity(), blockRectangle4.isDestroyed()));
+        blocks.add(new BodyData(blockRectangle5.getBody().getPosition().x, blockRectangle5.getBody().getPosition().y, blockRectangle5.getBody().getLinearVelocity().x, blockRectangle5.getBody().getLinearVelocity().y, blockRectangle5.getBody().getAngle(), blockRectangle5.getBody().getAngularVelocity(), blockRectangle5.isDestroyed()));
+        blocks.add(new BodyData(blockRectangle6.getBody().getPosition().x, blockRectangle6.getBody().getPosition().y, blockRectangle6.getBody().getLinearVelocity().x, blockRectangle6.getBody().getLinearVelocity().y, blockRectangle6.getBody().getAngle(), blockRectangle6.getBody().getAngularVelocity(), blockRectangle6.isDestroyed()));
+        blocks.add(new BodyData(blockRectangle7.getBody().getPosition().x, blockRectangle7.getBody().getPosition().y, blockRectangle7.getBody().getLinearVelocity().x, blockRectangle7.getBody().getLinearVelocity().y, blockRectangle7.getBody().getAngle(), blockRectangle7.getBody().getAngularVelocity(), blockRectangle7.isDestroyed()));
+
+        kp.add(new BodyData(kingpin.getBody().getPosition().x, kingpin.getBody().getPosition().y, kingpin.getBody().getLinearVelocity().x, kingpin.getBody().getLinearVelocity().y, kingpin.getBody().getAngle(), kingpin.getBody().getAngularVelocity(), kingpin.isDestroyed()));
+        Ap.add(new BodyData(adult_pig1.getBody().getPosition().x, adult_pig1.getBody().getPosition().y, adult_pig1.getBody().getLinearVelocity().x, adult_pig1.getBody().getLinearVelocity().y, adult_pig1.getBody().getAngle(), adult_pig1.getBody().getAngularVelocity(), adult_pig1.isDestroyed()));
+        Ap.add(new BodyData(adult_pig2.getBody().getPosition().x, adult_pig2.getBody().getPosition().y, adult_pig2.getBody().getLinearVelocity().x, adult_pig2.getBody().getLinearVelocity().y, adult_pig2.getBody().getAngle(), adult_pig2.getBody().getAngularVelocity(), adult_pig2.isDestroyed()));
+        Bp.add(new BodyData(baby_pig1.getBody().getPosition().x, baby_pig1.getBody().getPosition().y, baby_pig1.getBody().getLinearVelocity().x, baby_pig1.getBody().getLinearVelocity().y, baby_pig1.getBody().getAngle(), baby_pig1.getBody().getAngularVelocity(), baby_pig1.isDestroyed()));
+
+        SaveState gameState = new SaveState(blocks, cp, Ap, kp, Bp);
+        GameStateManager.saveGameState(gameState, "Level2_state.ser");
+
+    }
+
+    public void Loadgame() {
+        SaveState loadedGameState = GameStateManager.loadGameState("Level2_state.ser");
+        if (loadedGameState != null) {
+            List<BodyData> loadedBlocks = loadedGameState.getBlocks();
+            int cp = loadedGameState.getCatapults();
+            List<BodyData> Ap = loadedGameState.getAdultPigs();
+            List<BodyData> kp = loadedGameState.getKingPigs();
+            List<BodyData> bp = loadedGameState.getPigs();
+            catapult_drag.setIndex(cp);
+
+            if (!loadedBlocks.get(0).isDestroyed()) blockRectangle1.load(loadedBlocks.get(0));
+            else blockRectangle1.destroy();
+            if (!loadedBlocks.get(1).isDestroyed()) blockRectangle2.load(loadedBlocks.get(1));
+            else blockRectangle2.destroy();
+            if (!loadedBlocks.get(2).isDestroyed()) blockRectangle3.load(loadedBlocks.get(2));
+            else blockRectangle3.destroy();
+            if (!loadedBlocks.get(3).isDestroyed()) blockRectangle4.load(loadedBlocks.get(3));
+            else blockRectangle4.destroy();
+            if (!loadedBlocks.get(4).isDestroyed()) blockRectangle5.load(loadedBlocks.get(4));
+            else blockRectangle5.destroy();
+            if (!loadedBlocks.get(5).isDestroyed()) blockRectangle6.load(loadedBlocks.get(5));
+            else blockRectangle6.destroy();
+            if (!loadedBlocks.get(6).isDestroyed()) blockRectangle7.load(loadedBlocks.get(6));
+            else blockRectangle7.destroy();
+
+            if (!Ap.get(0).isDestroyed()) adult_pig1.load(Ap.get(0));
+            else adult_pig1.destroy();
+            if (!Ap.get(1).isDestroyed()) adult_pig2.load(Ap.get(1));
+            else adult_pig2.destroy();
+            if (!bp.get(0).isDestroyed()) baby_pig1.load(bp.get(0));
+            else baby_pig1.destroy();
+
+            if (!kp.get(0).isDestroyed()) kingpin.load(kp.get(0));
+            else kingpin.destroy();
+        }
+    }
+
+
     public void drawcatapult(float x, float height){
         catapult_body.type = BodyDef.BodyType.StaticBody;
         catapult_body.position.set(x/PPM, (floorWidth+20)/PPM);
@@ -347,11 +431,10 @@ public class level2 implements Screen{
         catapult.setUserData(this);
         catapultShape.dispose();
     }
+
+    private boolean f = false;
     @Override
     public void render(float deltaTime) {
-        if (isPaused){
-            return;
-        }
 
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
         camera.setToOrtho(false, viewport.getWorldWidth()/(PPM), viewport.getWorldHeight()/(PPM));
@@ -359,10 +442,50 @@ public class level2 implements Screen{
         camera.zoom = 1;
         batch.setProjectionMatrix(camera.combined);
         camera.update();
-        start_time += deltaTime;
         catapult_drag.setCatapultInput(deltaTime);
+        start_time += deltaTime;
         if (start_time >=1){
             world.setContactListener(game.getContactListener());
+
+        }
+        if (!pause){
+            catapult_drag.setCatapultInput(deltaTime);
+            if (f){
+
+                blockRectangle7.getState();
+                blockRectangle6.getState();
+                blockRectangle5.getState();
+                blockRectangle4.getState();
+                blockRectangle3.getState();
+                blockRectangle2.getState();
+                blockRectangle1.getState();
+
+                kingpin.getState();
+                adult_pig1.getState();
+                adult_pig2.getState();
+                baby_pig1.getState();
+
+
+                f = false;
+
+            }
+        }else {
+            f = true;
+
+            blockRectangle7.setState();
+            blockRectangle6.setState();
+            blockRectangle5.setState();
+            blockRectangle5.setState();
+            blockRectangle4.setState();
+            blockRectangle3.setState();
+            blockRectangle2.setState();
+            blockRectangle1.setState();
+
+            kingpin.setState();
+            adult_pig1.setState();
+            adult_pig2.setState();
+            baby_pig1.setState();
+
 
         }
 
@@ -416,7 +539,8 @@ public class level2 implements Screen{
 
         font.getData().setScale((float) (0.9/PPM));
 //        font.getData().setSpacing(2f);
-
+        savebutton.draw(batch);
+        loadbutton.draw(batch);
         font.draw(batch, "Score", (viewport.getWorldWidth()-300)/PPM, (viewport.getWorldHeight()-10)/PPM);
         float s =score.toString().length()/PPM;
         font.getData().setScale((float) (0.9));
@@ -428,40 +552,28 @@ public class level2 implements Screen{
         font.draw(batch, score.toString() , (viewport.getWorldWidth())/PPM - glyphLayout.width/PPM, (viewport.getWorldHeight()-80)/PPM);
 
 
-        blockRectangle1.draw_Block(deltaTime, batch);
-        blockRectangle2.draw_Block(deltaTime, batch);
-        blockRectangle3.draw_Block(deltaTime, batch);
-        blockRectangle4.draw_Block(deltaTime, batch);
+        blockRectangle1.draw_Block( batch);
+        blockRectangle2.draw_Block( batch);
+        blockRectangle3.draw_Block( batch);
+        blockRectangle4.draw_Block( batch);
 
         // First level platforms
-        blockRectangle5.draw_Block(deltaTime, batch);
-        blockRectangle6.draw_Block(deltaTime, batch);
+        blockRectangle5.draw_Block( batch);
+        blockRectangle6.draw_Block( batch);
 //
         // Vertical supports
-        blockRectangle7.draw_Block(deltaTime, batch);
+        blockRectangle7.draw_Block(batch);
 //        blockRectangle8.draw_Block(deltaTime, batch);
 //
 //        // Middle platform
 //        blockRectangle9.draw_Block(deltaTime, batch);
 //
 //        // Top structure
-//        blockRectangle10.draw_Block(deltaTime, batch);
-//        blockRectangle11.draw_Block(deltaTime, batch);
-//
-//        // Cross beams and additional supports
-//        blockRectangle12.draw_Block(deltaTime, batch);
-//        blockRectangle13.draw_Block(deltaTime, batch);
-//        blockRectangle14.draw_Block(deltaTime, batch);
-//        blockRectangle15.draw_Block(deltaTime, batch);
-//        blockRectangle16.draw_Block(deltaTime, batch);
-//        blockRectangle17.draw_Block(deltaTime, batch);
-//        blockRectangle18.draw_Block(deltaTime, batch);
-//        blockRectangle19.draw_Block(deltaTime, batch);
 
 //        blockFrame1.draw_Block(deltaTime, batch);
 //        blockFrame2.draw_Block(deltaTime, batch);
         birdYellow1.draw_object(batch);
-        batch.draw(cata, 300, floorWidth, 1000, 1000);  // useless
+        batch.draw(cata, 300, floorWidth, 1000, 1000);
         catapult_drag.renderCatapult();
         batch.end();
         update(deltaTime);
@@ -477,6 +589,9 @@ public class level2 implements Screen{
 
         pause_Button.set_Position(15/PPM, (viewport.getWorldHeight()-190)/PPM);
         restart_button.set_Position(210/PPM,(viewport.getWorldHeight()-190)/PPM);
+        savebutton.set_Position(1250/PPM, (viewport.getWorldHeight()-130)/PPM);
+        loadbutton.set_Position(900/PPM, (viewport.getWorldHeight()-130)/PPM);
+
         birdRed1.set_bird(360/PPM, (floorWidth+25)/PPM);
         birdRed2.set_bird(300/PPM, (floorWidth+25)/PPM);
         birdYellow1.set_bird(260/PPM, (floorWidth+25)/PPM);
@@ -525,6 +640,7 @@ public class level2 implements Screen{
 
 
     }
+
 
     @Override
     public void dispose() {

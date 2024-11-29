@@ -44,13 +44,13 @@ public class LoginScreen implements Screen {
     private Texture login_before;
     private Texture login_after;
 
-    private Click_Button sign_in_button;
+    Click_Button sign_in_button;
     private Texture sign_in_before;
     private Texture sign_in_after;
 
     private Texture bar;
-    private TextField usernameField;
-    private TextField passwordField;
+    TextField usernameField;
+    TextField passwordField;
     private Skin skin;
     TextFieldStyle textFieldStyle ;
 
@@ -186,7 +186,7 @@ public class LoginScreen implements Screen {
 
     }
 
-    private void update(float delta) {
+    void update(float delta) {
         batch.begin();
         if (cross_button.clicked()) {
             game.setScreen(game.getMainMenuScreen());

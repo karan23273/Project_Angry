@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class Level_Passed implements Screen {
@@ -84,8 +85,11 @@ public class Level_Passed implements Screen {
                 game.setWorld(new World(new Vector2(0, -9.8f),true));
                 game.setLevel_3(new level3(game));
                 game.setScreen(game.getLevel_3());
+            } else if (next_level == 1) {
+                game.setWorld(new World(new Vector2(0, -9.8f),true));
+                game.setLevel_1(new level1(game));
+                game.setScreen(game.getLevel_1());
             }
-//            game.setScreen(level);
         }
         if (restart_button.clicked()){
             if (next_level == 2){

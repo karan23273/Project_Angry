@@ -1,5 +1,6 @@
 package com.Angry_Bird.Pig;
 
+import com.Angry_Bird.BodyData;
 import com.Angry_Bird.launch;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -7,7 +8,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 
-public class Baby_pig implements Pig {
+import java.io.Serializable;
+
+public class Baby_pig implements Pig , Serializable {
+    private static final long serialVersionUID = 1L;
     private float PPM; // Pixels per meter
     private World world;
     private Sprite pig_sprite;
@@ -71,12 +75,14 @@ public class Baby_pig implements Pig {
             destroyed = true;
         }
     }
-
+    private Vector2 velocity;
+    float angle;
     @Override
     public void draw_Pig(float delta, SpriteBatch batch) {
         if (!destroyed){
             Vector2 pos = body.getPosition(); // Get position in meters
-
+            velocity = body.getLinearVelocity();
+            angle = body.getAngle();
             pig_sprite.setRotation((float) Math.toDegrees(body.getAngle()));
             pig_sprite.setOrigin(pig_sprite.getWidth() / 2, pig_sprite.getWidth() / 2);
             pig_sprite.setOriginBasedPosition(pos.x , pos.y);
@@ -104,5 +110,24 @@ public class Baby_pig implements Pig {
     }
     public  Body getBody(){
         return body;
+    }
+
+    public void setState(){
+        velocity = body.getLinearVelocity();
+        angle = body.getAngle();
+
+        body.setType(BodyDef.BodyType.StaticBody);
+    }
+    public void getState() {
+        body.setType(BodyDef.BodyType.DynamicBody);
+        body.setLinearVelocity(velocity);
+//        body.setAngularVelocity(angle);
+    }
+    public void load(BodyData bodyData){
+        if (destroyed) return;
+        body.setLinearVelocity(bodyData.getVelX(), bodyData.getVelY());
+        body.setAngularVelocity(bodyData.getAngularVelocity());
+        body.setTransform(bodyData.getPosX(), bodyData.getPosY(), bodyData.getAngle());
+        body.setUserData(this);
     }
 }

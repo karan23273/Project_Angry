@@ -19,6 +19,7 @@ public class Bird_Red implements Birds{
     private BodyDef bodyDef;
     private FixtureDef fixtureDef;
     private launch game;
+
     public Bird_Red(launch game, float x, float y) {
         this.game = game;
         PPM = game.getPPM();
@@ -70,12 +71,16 @@ public class Bird_Red implements Birds{
         destroyed = true;
         world.destroyBody(body);
     }
+    private Vector2 velocity;
+    float angle;
+
     @Override
     public void draw_object(SpriteBatch batch) {
         if (destroyed) return;
 
         Vector2 pos = body.getPosition();
-
+        velocity = body.getLinearVelocity();
+        angle = body.getAngle();
         red_sprite.setRotation((float) Math.toDegrees(body.getAngle()));
         red_sprite.setOrigin(red_sprite.getWidth() / 2, red_sprite.getHeight() / 2-5/PPM);
         red_sprite.setOriginBasedPosition(pos.x, pos.y);
@@ -89,6 +94,17 @@ public class Bird_Red implements Birds{
     }
     public boolean isDestroyed() {
         return destroyed;
+    }
+    public void setState(){
+        velocity = body.getLinearVelocity();
+        angle = body.getAngle();
+
+        body.setType(BodyDef.BodyType.StaticBody);
+    }
+    public void getState() {
+        body.setType(BodyDef.BodyType.DynamicBody);
+        body.setLinearVelocity(velocity);
+//        body.setAngularVelocity(angle);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.Angry_Bird.Blocks;
 
+import com.Angry_Bird.BodyData;
 import com.Angry_Bird.launch;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -9,9 +10,11 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Block_Rectangle {
+public class Block_Rectangle  {
+
     private Texture texture;
     private ShapeRenderer shapeRenderer;
     private float PPM;
@@ -97,12 +100,15 @@ public class Block_Rectangle {
         rectangle.dispose();
 
     }
-    public void draw_Block(float delta, SpriteBatch batch) {
+    private Vector2 velocity;
+    float angle;
+    public void draw_Block( SpriteBatch batch) {
 
         if (destroyed) return;
 
         Vector2 pos = body.getPosition(); // Get position in meters
-
+        velocity = body.getLinearVelocity();
+        angle = body.getAngle();
         // Align sprite center to body position
         block_sprite.setRotation((float) Math.toDegrees(body.getAngle()));
         block_sprite.setOriginCenter();
@@ -144,4 +150,26 @@ public class Block_Rectangle {
         block_sprite.setPosition(x / PPM, y / PPM);
         body.setTransform(x / PPM, y / PPM, body.getAngle());
     }
+
+    public void setState(){
+        velocity = body.getLinearVelocity();
+        angle = body.getAngle();
+        body.setType(BodyDef.BodyType.StaticBody);
+
+
+    }
+    public void getState() {
+        body.setType(BodyDef.BodyType.DynamicBody);
+        body.setLinearVelocity(velocity);
+        body.setAngularVelocity(angle);
+    }
+
+    public void load(BodyData bodyData){
+        if (destroyed) return;
+        body.setLinearVelocity(bodyData.getVelX(), bodyData.getVelY());
+        body.setAngularVelocity(bodyData.getAngularVelocity());
+        body.setTransform(bodyData.getPosX(), bodyData.getPosY(), bodyData.getAngle());
+        body.setUserData(this);
+    }
+
 }

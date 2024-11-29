@@ -558,6 +558,8 @@ public class launch extends Game {
         exitScreen = new Exit_Screen(this, mainMenuScreen);
         levelScreen = new Level_Screen(this, mainMenuScreen);
         level_1 = new level1(this);
+        level_2 = new level2(this);
+        level_3 = new level3(this);
         levelFailed = new Level_Failed(this, level_1);
         levelPassed = new Level_Passed(this, level_1);
         pauseScreen = new Pause_Screen(this);

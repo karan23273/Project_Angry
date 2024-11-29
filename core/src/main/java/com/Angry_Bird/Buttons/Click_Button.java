@@ -105,6 +105,7 @@ public class Click_Button extends launch {
     }
     public void setOff(){
         this.on = false;
+        clicked = false;
     }
     public void toggleDraw(SpriteBatch batch) {
 
@@ -117,10 +118,18 @@ public class Click_Button extends launch {
 
 
     public void toggleDrawON(SpriteBatch batch) {
-        batch.draw(before_click, button_x, button_y);
+        if (level){
+            batch.draw(before_click, button_x, button_y, button_width, button_height);
+        }else {
+            batch.draw(before_click, button_x, button_y);
+        }
     }
     public void toggleDrawOFF(SpriteBatch batch) {
-        batch.draw(after_click, button_x, button_y);
+        if (level){
+            batch.draw(after_click, button_x, button_y, button_width, button_height);
+        }else{
+            batch.draw(after_click, button_x, button_y);
+        }
     }
 
     public void draw(SpriteBatch batch) {
@@ -148,7 +157,7 @@ public class Click_Button extends launch {
         }
     }
 
-    private boolean hover_on(float cursor_x, float cursor_y){
+    public boolean hover_on(float cursor_x, float cursor_y){
 
         if (cursor_x >= button_x && cursor_y >= button_y ){
             if(cursor_x<= button_x + button_width && cursor_y<= button_y+button_height){
