@@ -391,29 +391,66 @@ public class level2 implements Screen{
             catapult_drag.setIndex(cp);
 
             if (!loadedBlocks.get(0).isDestroyed()) blockRectangle1.load(loadedBlocks.get(0));
-            else blockRectangle1.destroy();
+            else {
+                blockRectangle1.destroy();
+                score += 200;
+            }
             if (!loadedBlocks.get(1).isDestroyed()) blockRectangle2.load(loadedBlocks.get(1));
-            else blockRectangle2.destroy();
+            else {
+                blockRectangle2.destroy();
+                score += 200;
+            }
             if (!loadedBlocks.get(2).isDestroyed()) blockRectangle3.load(loadedBlocks.get(2));
-            else blockRectangle3.destroy();
+            else {
+                blockRectangle3.destroy();
+                score += 200;
+            }
             if (!loadedBlocks.get(3).isDestroyed()) blockRectangle4.load(loadedBlocks.get(3));
-            else blockRectangle4.destroy();
+            else {
+                blockRectangle4.destroy();
+                score += 200;
+            }
             if (!loadedBlocks.get(4).isDestroyed()) blockRectangle5.load(loadedBlocks.get(4));
-            else blockRectangle5.destroy();
+            else {
+                blockRectangle5.destroy();
+                score += 200;
+            }
             if (!loadedBlocks.get(5).isDestroyed()) blockRectangle6.load(loadedBlocks.get(5));
-            else blockRectangle6.destroy();
+            else {
+                blockRectangle6.destroy();
+                score += 200;
+            }
             if (!loadedBlocks.get(6).isDestroyed()) blockRectangle7.load(loadedBlocks.get(6));
-            else blockRectangle7.destroy();
+            else {
+                blockRectangle7.destroy();
+                score += 200;
+            }
 
             if (!Ap.get(0).isDestroyed()) adult_pig1.load(Ap.get(0));
-            else adult_pig1.destroy();
+            else{
+                adult_pig1.destroy();
+                kills--;
+                score += 500;
+            }
             if (!Ap.get(1).isDestroyed()) adult_pig2.load(Ap.get(1));
-            else adult_pig2.destroy();
+            else{
+                adult_pig2.destroy();
+                kills--;
+                score += 500;
+            }
             if (!bp.get(0).isDestroyed()) baby_pig1.load(bp.get(0));
-            else baby_pig1.destroy();
+            else{
+                baby_pig1.destroy();
+                kills--;
+                score += 200;
+            }
 
             if (!kp.get(0).isDestroyed()) kingpin.load(kp.get(0));
-            else kingpin.destroy();
+            else{
+                kingpin.destroy();
+                kills--;
+                score += 2000;
+            }
         }
     }
 

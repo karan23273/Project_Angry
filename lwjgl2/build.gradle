@@ -12,6 +12,12 @@ if (JavaVersion.current().isJava9Compatible()) {
 }
 
 dependencies {
+  testImplementation 'org.powermock:powermock-module-junit4:2.0.9'
+  testImplementation 'org.powermock:powermock-api-mockito2:2.0.9'
+  testImplementation 'org.mockito:mockito-core:3.11.2'
+}
+
+dependencies {
   implementation "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
   implementation "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
   implementation "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"

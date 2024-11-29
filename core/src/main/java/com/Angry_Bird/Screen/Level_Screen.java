@@ -27,7 +27,7 @@ public class Level_Screen implements Screen {
     private Texture launch_image;
     private BitmapFont font;
 
-    private Click_Button no_Button;
+    public Click_Button no_Button;
     private Texture no_before;
 
     private Texture no_after;
@@ -41,9 +41,9 @@ public class Level_Screen implements Screen {
     private Texture levelB;
     private Texture levelA;
 
-    private Click_Button level1_button;
-    private Click_Button level2_button;
-    private Click_Button level3_button;
+    public Click_Button level1_button;
+    public Click_Button level2_button;
+    public Click_Button level3_button;
 
     private Texture star_1;
     private Texture star_2;
@@ -62,7 +62,7 @@ public class Level_Screen implements Screen {
         Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
-    private void update(float delta) {
+    public void update(float delta) {
         if (no_Button.clicked()) {
             game.setScreen(game.getMainMenuScreen());
         }

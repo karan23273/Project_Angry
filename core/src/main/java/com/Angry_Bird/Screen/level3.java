@@ -358,35 +358,81 @@ public class level3 implements Screen {
             catapult_drag.setIndex(cp);
 
             if (!loadedBlocks.get(0).isDestroyed()) blockRectangle3.load(loadedBlocks.get(0));
-            else blockRectangle3.destroy();
+            else{
+                blockRectangle3.destroy();
+                score += 200;
+            }
             if (!loadedBlocks.get(1).isDestroyed()) blockRectangle6.load(loadedBlocks.get(1));
-            else blockRectangle6.destroy();
+            else{
+                blockRectangle6.destroy();
+                score += 200;
+            }
             if (!loadedBlocks.get(2).isDestroyed()) blockRectangle7.load(loadedBlocks.get(2));
-            else blockRectangle7.destroy();
+            else{
+                blockRectangle7.destroy();;
+                score += 200;
+            }
             if (!loadedBlocks.get(3).isDestroyed()) blockRectangle8.load(loadedBlocks.get(3));
-            else blockRectangle8.destroy();
+            else{
+                blockRectangle8.destroy();;
+                score += 200;
+            }
             if (!loadedBlocks.get(4).isDestroyed()) blockRectangle9.load(loadedBlocks.get(4));
-            else blockRectangle9.destroy();
+            else{
+                blockRectangle9.destroy();;
+                score += 200;
+            }
             if (!loadedBlocks.get(5).isDestroyed()) blockRectangle10.load(loadedBlocks.get(5));
-            else blockRectangle10.destroy();
+            else{
+                blockRectangle10.destroy();
+                score += 200;
+            }
             if (!loadedBlocks.get(6).isDestroyed()) blockRectangle11.load(loadedBlocks.get(6));
-            else blockRectangle11.destroy();
+            else{
+                blockRectangle11.destroy();
+                score += 200;
+            }
             if (!loadedBlocks.get(7).isDestroyed()) blockRectangle12.load(loadedBlocks.get(7));
-            else blockRectangle12.destroy();
+            else{
+                blockRectangle12.destroy();
+                score += 200;
+            }
             if (!loadedBlocks.get(8).isDestroyed()) blockRectangle13.load(loadedBlocks.get(8));
-            else blockRectangle13.destroy();
+            else{
+                blockRectangle13.destroy();
+                score += 200;
+            }
             if (!loadedBlocks.get(9).isDestroyed()) blockRectangle14.load(loadedBlocks.get(9));
-            else blockRectangle14.destroy();
+            else{
+                blockRectangle14.destroy();
+                score += 200;
+            }
 
             if (!Ap.get(0).isDestroyed()) adult_pig1.load(Ap.get(0));
-            else adult_pig1.destroy();
+            else{
+                adult_pig1.destroy();
+                score +=500;
+                kills--;
+            }
             if (!Ap.get(1).isDestroyed()) adult_pig2.load(Ap.get(1));
-            else adult_pig2.destroy();
+            else{
+                adult_pig2.destroy();
+                score +=500;
+                kills--;
+            }
             if (!Ap.get(2).isDestroyed()) adult_pig3.load(Ap.get(2));
-            else adult_pig3.destroy();
+            else{
+                adult_pig3.destroy();
+                score +=500;
+                kills--;
+            }
 
             if (!kp.get(0).isDestroyed()) kingpin.load(kp.get(0));
-            else kingpin.destroy();
+            else{
+                kingpin.destroy();
+                score +=2000;
+                kills--;
+            }
         }
     }
 

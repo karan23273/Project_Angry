@@ -153,7 +153,7 @@ public class Catapult implements Serializable {
     }
 
 
-    private void launchBird() {
+    public void launchBird() {
         body.setType(BodyDef.BodyType.DynamicBody);
         Vector2 launchDirection = currentPos.cpy().sub(initialPos).nor();
         float power = currentPos.dst(initialPos)*40;
@@ -223,7 +223,7 @@ public class Catapult implements Serializable {
 
     }
 
-    private boolean hoverOn(float cursorX, float cursorY) {
+    public boolean hoverOn(float cursorX, float cursorY) {
         return new Vector2(cursorX, cursorY).dst(buttonX, buttonY) <= (radius*2)/PPM;
     }
 
